@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import ping  # 👈 Importamos la vista
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ping/', ping),  # 👈 Endpoint de prueba
+    path('api/users/', include('users.urls')),  # aquí incluyes el de tu app
 ]
