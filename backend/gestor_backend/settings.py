@@ -41,13 +41,15 @@ INSTALLED_APPS = [
     # Nuevas apps añadidas
     'rest_framework',
     'corsheaders',
+    # Añade app creada
+    'users'
 ]
 
 # --- MODELO DE USUARIO PERSONALIZADO ---
 # Se define en la app 'colonias' como extensión de AbstractUser.
 # Esto permite distinguir entre administrador y voluntario (roles),
 # y añadir campos adicionales como teléfono.
-# AUTH_USER_MODEL = 'colonias.Usuario'
+AUTH_USER_MODEL = 'users.CustomUser'  
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
