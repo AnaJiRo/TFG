@@ -35,4 +35,4 @@ class DeleteUserView(generics.DestroyAPIView):
     """ Eliminar usuario """
     queryset = User.objects.all()
     lookup_field = 'id'
-    
+    permission_classes = [IsAuthenticated] # --> Requiere estar logueado.
