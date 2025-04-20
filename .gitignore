@@ -1,4 +1,71 @@
-*.pyc
+# Byte-compiled / optimized / DLL files
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# Archivos de configuración y variables de entorno
+*.env
+*.env.local
+*.env.*
+
+# Archivos de la base de datos
+*.sqlite3
+db.sqlite3
+
+# Configuraciones de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Archivos de tests
+.coverage
+.tox/
+.nox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Django specific
+*.mo
+*.pot
+staticfiles/
+media/
+
+# Migraciones que no quieras controlar (opcional)
+# **/migrations/
+
+# Docker
+*.pid
+*.sock
+docker-compose.override.yml
+
+# Compilaciones y paquetes
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Git
+*.orig
