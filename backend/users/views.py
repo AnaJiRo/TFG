@@ -4,7 +4,7 @@ from rest_framework import generics
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdmin
+from .permissions import IsAdmin, IsAdminOrSelf
 from rest_framework.response import Response    
 from rest_framework import status
 from .serializers import PromoteByEmailSerializer
@@ -32,13 +32,13 @@ class UpdateUserView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'id'
-    permission_classes = [IsAuthenticated] # --> Requiere estar logueado.
+    permission_classes = [IsAuthenticated, IsAdminOrSelf] # --> Requiere estar logueado.
 
 class DeleteUserView(generics.DestroyAPIView):
     """ Eliminar usuario """
     queryset = User.objects.all()
     lookup_field = 'id'
-    permission_classes = [IsAuthenticated] # --> Requiere estar logueado.
+    permission_classes = [IsAuthenticated, IsAdminOrSelf] # --> Requiere estar logueado.
 
 class PromoteByEmailView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
