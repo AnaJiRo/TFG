@@ -1,11 +1,31 @@
 import { useState } from 'react';
 import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/authService';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    try {
+      const response = await loginUser({ email, password });
+
+      // Guarda el token en localStorage
+      localStorage.setItem('access_token', response.access);
+      localStorage.setItem('refresh_token', response.refresh);
+
+      // Redirige a dashboard o inicio
+      navigate('/dashboard'); // ajusta la ruta según tu app
+    } catch (err) {
+      console.error('Error de login:', err);
+      setError('Credenciales incorrectas o error del servidor');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-purpleTheme-background flex items-center justify-center px-4">
@@ -35,10 +55,17 @@ export default function LoginPage() {
         </div>
 
         {/* Botón */}
-        <Button label="Entrar" variant="primary" />
+        <div className="w-full">
+          <Button label="Entrar" variant="primary" onClick={handleSubmit} />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p className="text-sm text-red-400 font-nunito mt-2">{error}</p>
+        )}
 
         {/* Enlace a registro */}
-        <p className="text-sm text-white/80 font-nunito">
+        <p className="text-sm text-white/80 font-nunito text-center">
           ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-white underline hover:text-purple-200">
             Regístrate aquí
