@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         purpleTheme: {
           primary: "#7C3AED",
+          secondary: "#c084fc",
           background: "#E9D5FF",
           dark: "#4A044E",
           accent: "#F97316",

@@ -14,7 +14,7 @@ export default function Button({ label, onClick, variant = 'primary' }: ButtonPr
   const baseStyles = 'px-4 py-2 rounded-lg font-poppins transition-colors duration-300';
   const variants = {
     primary: 'bg-purpleTheme-primary text-white hover:bg-purpleTheme-dark',
-    secondary: 'bg-white text-purpleTheme-primary border border-purpleTheme-primary hover:bg-purpleTheme-background',
+    secondary: 'bg-purple-400 text-white border border-purpleTheme-primary hover:bg-purpleTheme-background',
     error: 'bg-purpleTheme-error text-white hover:opacity-90',
   };
 

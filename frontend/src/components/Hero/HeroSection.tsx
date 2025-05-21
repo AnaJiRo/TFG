@@ -18,7 +18,7 @@ export default function HeroSection() {
         Tu aplicación para el manejo y cuidado de los gatos callejeros.
       </p>
       <Link to="/login">
-        <button className="mt-8 px-6 py-3 text-lg rounded-xl bg-purpleTheme-primary hover:bg-purpleTheme-dark font-poppins transition-colors shadow-lg">
+        <button className="mt-8 px-6 py-3 text-white rounded-xl  bg-purple-400 border-purpleTheme-primary hover:bg-purpleTheme-background font-poppins transition-colors shadow-lg">
           Empezar
         </button>
       </Link>
