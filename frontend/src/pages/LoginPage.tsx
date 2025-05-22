@@ -28,10 +28,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-purpleTheme-background flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-purple-300 backdrop-blur-md p-8 rounded-2xl shadow-lg flex flex-col items-center gap-6">
+    <div 
+    className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center px-4"
+    style={{ backgroundImage: "url('/assets/login/Fondo_solo.png')" }}>
+      <div className="w-full max-w-md bg-fuchsia-400/80 backdrop-blur-md p-8 rounded-2xl shadow-lg flex flex-col items-center gap-6">
         {/* Imagen SVG del gato */}
-        <img src="/assets/login/cat.svg" alt="Gato" className="w-24 h-24" />
+        <img src="/assets/login/cat_1.svg" alt="Gato" className="w-24 h-24" />
 
         {/* Título */}
         <h1 className="text-2xl font-bold text-white font-poppins">Iniciar sesión</h1>
@@ -55,8 +57,8 @@ export default function LoginPage() {
         </div>
 
         {/* Botón */}
-        <div className="w-full">
-          <Button label="Entrar" variant="secondary" onClick={handleSubmit} />
+        <div className="w-full flex justify-center">
+          <Button label="Login" variant="tertiary" onClick={handleSubmit} />
         </div>
 
         {/* Error */}
@@ -65,9 +67,9 @@ export default function LoginPage() {
         )}
 
         {/* Enlace a registro */}
-        <p className="text-sm text-white/80 font-nunito text-center">
+        <p className="text-base text-white/80 font-nunito text-center">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-white underline hover:text-purple-400">
+          <Link to="/register" className="text-white underline hover:text-purple-700">
             Regístrate aquí
           </Link>
         </p>
