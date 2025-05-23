@@ -8,15 +8,22 @@ export default function HeroSection() {
         backgroundImage: "url('/assets/landing/landing-bg.png')",
       }}
     >
+       {/* Título principal */}
       <h1 className="text-3xl md:text-5xl font-bold font-poppins drop-shadow-lg uppercase tracking-wide">
         Gestor de Colonias
       </h1>
+
+       {/* Subtítulo */}
       <h2 className="text-xl md:text-3xl mt-4 font-semibold font-poppins drop-shadow-sm">
         Gestiona colonias felinas
       </h2>
+
+      {/* Descripción */}
       <p className="mt-4 max-w-xl text-sm md:text-lg font-nunito text-white/90">
         Tu aplicación para el manejo y cuidado de los gatos callejeros.
       </p>
+      
+       {/* Botón */}
       <Link to="/login">
         <button className="mt-8 px-6 py-3 text-white rounded-xl  bg-purple-400 border-purpleTheme-primary hover:bg-purpleTheme-background font-poppins transition-colors shadow-lg">
           Empezar

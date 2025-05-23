@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   return (
     <div 
-    className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center px-4"
+    className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center px-4"
     style={{ backgroundImage: "url('/assets/login/Fondo_solo.png')" }}>
 
       <div className="w-full max-w-xs bg-fuchsia-300/80 backdrop-blur-md px-6 py-4 rounded-2xl shadow-lg flex flex-col items-center gap-6">
