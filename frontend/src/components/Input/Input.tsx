@@ -31,8 +31,10 @@ export default function Input({
         onChange={onChange}
         placeholder={placeholder}
         className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all
-          ${error ? 'border-purpleTheme-error' : 'border-purpleTheme-border'}
-          focus:ring-2 focus:ring-purpleTheme-primary`}
+          bg-white/10 text-white placeholder-white/70
+          ${error ? 'border-purpleTheme-error' : 'border-white/30'}
+          focus:ring-2 focus:ring-white/50`
+        }
       />
 
       {/* Mensaje de error */}
