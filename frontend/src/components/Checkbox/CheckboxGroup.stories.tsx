@@ -34,7 +34,7 @@ function CheckboxGroupWrapper(props: any) {
 export const Responsive: Story = {
   render: () => (
     <CheckboxGroupWrapper
-      options={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']}
+      options={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']}
       responsive={true}
     />
   ),
@@ -43,7 +43,7 @@ export const Responsive: Story = {
 export const FixedTwoColumns: Story = {
   render: () => (
     <CheckboxGroupWrapper
-      options={['Lunes', 'Martes', 'Miércoles', 'Jueves']}
+      options={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']}
       columns={2}
     />
   ),
