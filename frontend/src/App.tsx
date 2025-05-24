@@ -1,16 +1,25 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Ping from './Ping';  // 👈 Este es el nuevo componente
+import { Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/LandingPage'; 
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+//import Dashboard from './pages/Dashboard'; // crea un componente si no existe aún
+import PrivateRoute from './routes/PrivateRoute';
 
 function App() {
   return (
-    <div>
-      <h1>React + Django Test</h1>
-      <Ping />  {/* 👈 Aquí lo usamos */}
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+
+      {/* 🔐 Ruta protegida */}
+      <Route element={<PrivateRoute />}>
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        {/* Aquí puedes meter más rutas privadas si quieres */}
+      </Route>
+    </Routes>
   );
 }
+
 
 export default App;
