@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # Añade app creada
-    'users'
+    'users',
+    'colony',
 ]
 
 # --- MODELO DE USUARIO PERSONALIZADO ---
