@@ -9,25 +9,21 @@ const meta: Meta<typeof CheckboxGroup> = {
 };
 
 export default meta;
-
 type Story = StoryObj<typeof CheckboxGroup>;
 
-// Componente wrapper para manejar el estado de selección en Storybook
-function CheckboxGroupWrapper() {
+function CheckboxGroupWrapper(props: any) {
   const [selected, setSelected] = useState<string[]>(['Lunes']);
 
   const handleChange = (value: string) => {
     setSelected((prev) =>
-      prev.includes(value)
-        ? prev.filter((v) => v !== value)
-        : [...prev, value]
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     );
   };
 
   return (
-    <div className="bg-purple-700 p-4 rounded-lg w-64">
+    <div className="bg-purple-700 p-4 rounded-lg w-full max-w-md">
       <CheckboxGroup
-        options={['Lunes', 'Martes', 'Miércoles', 'Jueves']}
+        {...props}
         selected={selected}
         onChange={handleChange}
       />
@@ -35,6 +31,20 @@ function CheckboxGroupWrapper() {
   );
 }
 
-export const Default: Story = {
-  render: () => <CheckboxGroupWrapper />,
+export const Responsive: Story = {
+  render: () => (
+    <CheckboxGroupWrapper
+      options={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']}
+      responsive={true}
+    />
+  ),
+};
+
+export const FixedTwoColumns: Story = {
+  render: () => (
+    <CheckboxGroupWrapper
+      options={['Lunes', 'Martes', 'Miércoles', 'Jueves']}
+      columns={2}
+    />
+  ),
 };
