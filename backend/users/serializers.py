@@ -1,6 +1,7 @@
+from colony.models import Zone
 from rest_framework import serializers
+from .models import Availability
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
 
 User = get_user_model()
 
@@ -33,3 +34,13 @@ class UserSerializer(serializers.ModelSerializer):
     
 class PromoteByEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class AvailabilitySerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    zone = serializers.PrimaryKeyRelatedField(queryset=Zone.objects.all())
+
+    class Meta:
+        model = Availability
+        fields = ['id', 'user', 'day', 'zone']
+        read_only_fields = ['id', 'user']

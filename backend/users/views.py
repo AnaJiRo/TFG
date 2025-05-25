@@ -1,13 +1,42 @@
-# users/views.py
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer
+from .serializers import UserSerializer, AvailabilitySerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdmin, IsAdminOrSelf
 from rest_framework.response import Response    
 from rest_framework import status
 from .serializers import PromoteByEmailSerializer
+from .models import Availability
+
+
+class MyAvailabilityListCreateView(generics.ListCreateAPIView):
+    serializer_class = AvailabilitySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Availability.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class AllAvailabilityListView(generics.ListAPIView):
+    serializer_class = AvailabilitySerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    queryset = Availability.objects.all()
+
+class AvailabilityDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AvailabilitySerializer
+    permission_classes = [IsAuthenticated, IsAdminOrSelf]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Availability.objects.all()
+        return Availability.objects.filter(user=user)
+
+
 
 User = get_user_model()
 
