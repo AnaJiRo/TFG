@@ -5,6 +5,7 @@ import CheckboxGroup from '../components/Checkbox/CheckboxGroup';
 import SelectBox from '../components/SelectBox';
 import FormContainer from '../components/FormContainer';
 import { useNavigate } from 'react-router-dom';
+import { validateColoniaData } from '../utils/validators';
 
 const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const zonasDummy = ['Centro', 'Norte', 'Sur', 'La Nana']; // TODO: obtener desde API 
@@ -25,20 +26,19 @@ export default function NuevaColoniaPage() {
   };
 
   const handleSubmit = async () => {
-    if (!nombre.trim()) return setError('El nombre es obligatorio');
-    if (!zona) return setError('Debes seleccionar una zona');
-    if (dias.length === 0) return setError('Selecciona al menos un día');
+    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, dias });
 
-    // TODO: enviar la colonia al backend
-    console.log({
-      nombre,
-      ubicacion,
-      zona,
-      dias,
-    });
+    if (errorMessage) {
+      setError(errorMessage);
+      return;
+    }
 
     setError(null);
-    navigate('/colonias');
+
+    // TODO: Enviar los datos al backend mediante POST
+    console.log({ nombre, ubicacion, zona, dias });
+
+    navigate('/colonias'); // redirige al dashboard de colonias
   };
 
   const isValid = nombre && zona && dias.length > 0;
