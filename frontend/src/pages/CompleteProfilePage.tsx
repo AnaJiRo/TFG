@@ -35,8 +35,8 @@ export default function CompleteProfilePage() {
     // TODO: enviar datos al backend para completar el perfil del voluntario
     console.log({
       phone,
-      locality,
       province,
+      locality,
       availableDays,
       selectedZone,
     });
@@ -55,7 +55,7 @@ export default function CompleteProfilePage() {
         {/* Título */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white font-poppins">¡Bienvenido!</h1>
-          <p className="text-white/90 mt-1 font-nunito">Completa tu información para empezar</p>
+          <p className="text-white/90 mt-1 font-nunito">Completa tu información para terminar</p>
         </div>
 
         {/* Teléfono */}
@@ -66,7 +66,17 @@ export default function CompleteProfilePage() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
+        {/*Esto podia cambiar, no es fijo*/}
+        {/* Provincia (opcional) */}
+        <Input
+          label="Provincia"
+          type="text"
+          placeholder="Ej: Sevilla"
+          value={province}
+          onChange={(e) => setProvince(e.target.value)}
+        />
 
+        {/*Esto podia cambiar, no es fijo*/}
         {/* Localidad */}
         <Input
           label="Localidad"
@@ -76,14 +86,6 @@ export default function CompleteProfilePage() {
           onChange={(e) => setLocality(e.target.value)}
         />
 
-        {/* Provincia (opcional) */}
-        <Input
-          label="Provincia"
-          type="text"
-          placeholder="Ej: Sevilla"
-          value={province}
-          onChange={(e) => setProvince(e.target.value)}
-        />
 
         {/* Días disponibles */}
         <div>
@@ -96,6 +98,7 @@ export default function CompleteProfilePage() {
           />
         </div>
 
+        {/*Esto cabiara, no sera radiogroup, ya que la zona sera editable por el admin y filtrara por localidad*/}
         {/* Zona preferida */}
         <div>
           <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
@@ -110,10 +113,10 @@ export default function CompleteProfilePage() {
         </div>
 
         {/* Botón y errores */}
-        <div className="w-full mt-2">
+        <div className="w-full flex justify-center mt-2">
           <Button
             label="Guardar y continuar"
-            variant="primary"
+            variant="tertiary"
             onClick={handleSubmit}
             disabled={!isValid}
           />
