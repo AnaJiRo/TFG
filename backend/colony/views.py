@@ -67,16 +67,40 @@ class AssignmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 
 
 class AssignmentSummaryView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, colony_id):
-        colony = get_object_or_404(Colony, id=colony_id)
-        assignments = Assignment.objects.filter(colony=colony)
+    def get(self, request):
+        user = request.user
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        summary = {day: None for day in days}
-        for assignment in assignments:
-            summary[assignment.day] = assignment.volunteer.name if assignment.volunteer else None
-        return Response({
-            "colonia": colony.name,
-            "asignaciones": summary
-        })
+        result = []
+
+        # Si es admin, ve todas las colonias y todos los días con voluntarios asignados
+        if hasattr(user, 'role') and user.role == 'admin' or user.is_superuser:
+            from .models import Colony
+            colonies = Colony.objects.all()
+            for colony in colonies:
+                assignments = Assignment.objects.filter(colony=colony)
+                summary = {day: None for day in days}
+                for assignment in assignments:
+                    summary[assignment.day] = assignment.volunteer.name if assignment.volunteer else None
+                result.append({
+                    "colonia": colony.name,
+                    "asignaciones": summary
+                })
+            return Response(result)
+
+        # Si es voluntario, ve todas las colonias donde está asignado y los días que tiene asignados
+        else:
+            assignments = Assignment.objects.filter(volunteer=user)
+            colonies = {}
+            for assignment in assignments:
+                colony_name = assignment.colony.name
+                if colony_name not in colonies:
+                    colonies[colony_name] = {day: None for day in days}
+                colonies[colony_name][assignment.day] = user.name if hasattr(user, 'name') else user.get_full_name() or user.username
+            for colony_name, summary in colonies.items():
+                result.append({
+                    "colonia": colony_name,
+                    "asignaciones": summary
+                })
+            return Response(result)
