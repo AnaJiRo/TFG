@@ -3,7 +3,7 @@ import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
 import FormContainer from '../components/FormContainer';
 import CheckboxGroup from '../components/Checkbox/CheckboxGroup';
-import RadioGroup from '../components/radiogroup/RadioGroup';
+import SelectBox from '../components/SelectBox';
 import { useNavigate } from 'react-router-dom';
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -102,12 +102,11 @@ export default function CompleteProfilePage() {
         {/* Zona preferida */}
         <div>
           <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
-          <RadioGroup
-            name="zona"
-            options={dummyZones}
-            selected={selectedZone}
+          <SelectBox
+            label=""
+            value={selectedZone}
             onChange={setSelectedZone}
-            responsive
+            options={dummyZones}
           />
           {/* TODO: reemplazar dummyZones por llamada a API de zonas según localidad */}
         </div>
