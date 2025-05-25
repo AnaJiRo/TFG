@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
 import DashboardColoniasPage from './pages/DashboardColoniasPage';
+import NuevaColoniaPage from './pages/NuevaColoniaPage';
 //import Dashboard from './pages/Dashboard'; // crea un componente si no existe aún
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -15,6 +16,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/completar-perfil" element={<CompleteProfilePage />} />
       <Route path="/colonias" element={<DashboardColoniasPage />} />
+      <Route path="/colonias/nueva" element={<NuevaColoniaPage />} />
 
       {/* 🔐 Ruta protegida */}
       <Route element={<PrivateRoute />}>

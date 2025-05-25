@@ -20,7 +20,7 @@ export default function Input({
   return (
     <div className="flex flex-col w-full font-nunito">
       {/* Etiqueta del campo */}
-      <label className="mb-1 text-sm font-semibold text-purpleTheme-text">
+      <label className="mb-1 text-sm font-semibold text-white">
         {label}
       </label>
 

@@ -2,7 +2,7 @@ type CheckboxGroupProps = {
   options: string[];
   selected: string[];
   onChange: (value: string) => void;
-  columns?: number;               // columnas fijas (1, 2, 3...)
+  direction?: 'row' | 'column';              
   responsive?: boolean;           // usar columnas responsive (1 en móvil, 2 en desktop)
 };
 
@@ -10,32 +10,29 @@ export default function CheckboxGroup({
   options,
   selected,
   onChange,
-  columns = 1,
+  direction = 'column',
   responsive = false,
 }: CheckboxGroupProps) {
-  const baseClass = 'grid gap-2';
+  const layout =
+    direction === 'row'
+      ? 'flex flex-wrap gap-4'
+      : responsive
+      ? 'grid grid-cols-2 gap-x-4 gap-y-2'
+      : 'flex flex-col gap-2';
 
-  const columnClass = responsive
-    ? 'grid-cols-1 md:grid-cols-2' // 1 columna en móvil, 2 en escritorio
-    : {
-        1: 'grid-cols-1',
-        2: 'grid-cols-2',
-        3: 'grid-cols-3',
-        4: 'grid-cols-4',
-      }[columns] || 'grid-cols-1';
-
-  return (
-    <div className={`${baseClass} ${columnClass}`}>
-      {options.map((option) => (
-        <label key={option} className="flex items-center gap-2 text-white">
-          <input
-            type="checkbox"
-            checked={selected.includes(option)}
-            onChange={() => onChange(option)}
-          />
-          {option}
-        </label>
-      ))}
-    </div>
-  );
-}
+    return (
+      <div className={layout}>
+        {options.map((option) => (
+          <label key={option} className="flex items-center gap-2 text-white text-sm">
+            <input
+              type="checkbox"
+              checked={selected.includes(option)}
+              onChange={() => onChange(option)}
+              className="accent-purpleTheme-primary w-4 h-4"
+            />
+            {option}
+          </label>
+        ))}
+      </div>
+    );
+  }

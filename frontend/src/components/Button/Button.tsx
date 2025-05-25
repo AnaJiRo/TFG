@@ -12,7 +12,7 @@ type ButtonProps = {
 
 export default function Button({ label, onClick, variant = 'primary', disabled = false }: ButtonProps) {
   // Estilos condicionales según el tipo de botón
-  const baseStyles = 'px-4 py-2 rounded-lg font-poppins transition-colors duration-300';
+  const baseStyles = 'px-4 py-2 rounded-lg font-poppins transition-colors duration-300 flex justify-center';
   const variants = {
     primary: 'bg-purpleTheme-primary text-white hover:bg-purpleTheme-dark',
     secondary: 'bg-purple-600 text-white border border-purpleTheme-primary hover:bg-purpleTheme-background',
