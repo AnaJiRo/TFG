@@ -21,12 +21,13 @@ export default function RegisterPage() {
       localStorage.setItem('access_token', response.access);
       localStorage.setItem('refresh_token', response.refresh);
 
-      // Redirige tras registrarse (ej: login o dashboard)
-      navigate('/dashboard');
+      // Redirige tras registrarse a la vista de completar perfil
+      navigate('/completar-perfil');
     } catch (err) {
       console.error('Error de registro:', err);
       setError('Hubo un error al registrarse');
     }
+    
 };
 
   return (
