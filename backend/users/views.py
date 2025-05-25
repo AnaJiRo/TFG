@@ -15,7 +15,10 @@ class MyAvailabilityListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Availability.objects.filter(user=self.request.user)
+        user = self.request.user
+        if hasattr(user, 'role') and user.role == 'admin':
+            return Availability.objects.all()
+        return Availability.objects.filter(user=user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
