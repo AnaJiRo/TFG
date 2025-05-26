@@ -3,6 +3,7 @@ export type ColoniaData = {
     ubicacion: string;
     zona: string;
     dias: string[];
+    voluntariosAsignados?: string[];
   };
   
   export function validateColoniaData(data: ColoniaData): string | null {

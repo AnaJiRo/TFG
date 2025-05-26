@@ -8,7 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { validateColoniaData } from '../utils/validators';
 
 const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-const zonasDummy = ['Centro', 'Norte', 'Sur', 'La Nana']; // TODO: obtener desde API 
+
+// TODO: Reemplazar esto por una llamada a la API real de voluntarios por zona
+const dummyVoluntarios: Record<string, string[]> = {
+  'Centro': ['Laura P.', 'Antonio G.'],
+  'La Nana': ['Eva M.'],
+  'Los Ratoneros': ['Pedro A.', 'Carmen T.'],
+};
 
 export default function NuevaColoniaPage() {
   const [nombre, setNombre] = useState('');
@@ -16,6 +22,9 @@ export default function NuevaColoniaPage() {
   const [zona, setZona] = useState('');
   const [dias, setDias] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<string[]>([]);
+  const [voluntariosAsignados, setVoluntariosAsignados] = useState<string[]>([]);
+
 
   const navigate = useNavigate();
 
@@ -26,7 +35,7 @@ export default function NuevaColoniaPage() {
   };
 
   const handleSubmit = async () => {
-    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, dias });
+    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, dias, voluntariosAsignados});
 
     if (errorMessage) {
       setError(errorMessage);
@@ -41,7 +50,7 @@ export default function NuevaColoniaPage() {
     navigate('/colonias'); // redirige al dashboard de colonias
   };
 
-  const isValid = nombre && zona && dias.length > 0;
+  const isValid = nombre && ubicacion && zona && dias.length > 0;
 
   return (
     <div
@@ -82,7 +91,15 @@ export default function NuevaColoniaPage() {
           type="text"
           placeholder="Ej: La Nana"
           value={zona}
-          onChange={(e) => setZona(e.target.value)}
+          onChange={(e) => {
+            const nuevaZona = e.target.value;
+            setZona(nuevaZona);
+        
+            // Simular consulta de voluntarios disponibles en esa zona
+            const disponibles = dummyVoluntarios[nuevaZona] || [];
+            setVoluntariosDisponibles(disponibles);
+            setVoluntariosAsignados([]); // Limpiar asignados si cambia la zona
+          }}
         />
 
         {/* Días */}
@@ -96,6 +113,29 @@ export default function NuevaColoniaPage() {
             responsive
           />
         </div>
+
+        <div className="w-full">
+          <h2 className="text-white font-semibold mb-2">Voluntarios disponibles en esta zona</h2>
+
+          {zona.trim() === '' ? (
+            <p className="text-sm text-white/70">Introduce una zona para ver si hay voluntarios disponibles.</p>
+          ) : voluntariosDisponibles.length === 0 ? (
+            <p className="text-sm text-white/70">No hay voluntarios disponibles en esta zona actualmente.</p>
+          ) : (
+            <CheckboxGroup
+              options={voluntariosDisponibles}
+              selected={voluntariosAsignados}
+              onChange={(v) =>
+                setVoluntariosAsignados((prev) =>
+                  prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
+                )
+              }
+              direction="column"
+            />
+          )}
+        </div>
+
+
 
         {/* Botón */}
         <div className="w-full flex justify-center mt-2">
@@ -111,6 +151,7 @@ export default function NuevaColoniaPage() {
         {/* TODO: Conectar con endpoint POST /colonias */}
         {/* TODO: Añadir spinner / feedback de guardado */}
         {/* TODO: Mostrar errores del backend si los hubiera */}
+        {/* TODO: Mapear nombres de voluntarios a IDs reales al enviar al backend*/}
       </FormContainer>
     </div>
   );
