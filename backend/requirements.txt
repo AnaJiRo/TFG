@@ -3,3 +3,6 @@ psycopg2-binary
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers>=3.14
+pytest
+pytest-mock
+pytest-django

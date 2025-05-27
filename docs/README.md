@@ -58,6 +58,8 @@ cd gestor-colonias
 docker compose up --build
 ```
 
+
+
 ### 3. Acceder a la app
 
 - Frontend: http://localhost:5173
@@ -108,6 +110,29 @@ useEffect(() => {
 - [ ] Autenticación con JWT
 - [ ] UI para registrar colonias y gatos
 - [ ] Panel de administración
+
+---
+
+## 👤 Crear usuario administrador en Django
+
+1. Abre la shell de Django:
+   ```bash
+   python manage.py shell
+   ```
+
+2. Crea el usuario con rol "admin":
+   ```python
+   from django.contrib.auth import get_user_model
+   User = get_user_model()
+
+   admin_user = User.objects.create_user(
+       username='admin',
+       email='admin@example.com',
+       name='Administrador',
+       password='adminseguro123',
+       role='admin'
+   )
+   ```
 
 ---
 
