@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
-import CheckboxGroup from '../components/Checkbox/CheckboxGroup';
 import SelectBox from '../components/SelectBox';
 import FormContainer from '../components/FormContainer';
 import { useNavigate } from 'react-router-dom';
@@ -9,33 +8,38 @@ import { validateColoniaData } from '../utils/validators';
 
 const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
-// TODO: Reemplazar esto por una llamada a la API real de voluntarios por zona
-const dummyVoluntarios: Record<string, string[]> = {
-  'Centro': ['Laura P.', 'Antonio G.'],
-  'La Nana': ['Eva M.'],
-  'Los Ratoneros': ['Pedro A.', 'Carmen T.'],
+type Voluntario = {
+  nombre: string;
+  dias: string[]; // ['L', 'X', 'V']
+};
+
+const dummyVoluntarios: Record<string, Voluntario[]> = {
+  'La Nana': [
+    { nombre: 'Laura P.', dias: ['L', 'X'] },
+    { nombre: 'Eva M.', dias: ['J', 'D'] },
+  ],
+  'Centro': [
+    { nombre: 'Antonio G.', dias: ['L', 'M', 'X', 'J'] },
+    { nombre: 'Pedro A.', dias: ['V', 'S', 'D'] },
+  ],
 };
 
 export default function NuevaColoniaPage() {
   const [nombre, setNombre] = useState('');
   const [ubicacion, setUbicacion] = useState('');
   const [zona, setZona] = useState('');
-  const [dias, setDias] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<string[]>([]);
-  const [voluntariosAsignados, setVoluntariosAsignados] = useState<string[]>([]);
+  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<Voluntario[]>([]);
 
+  const [asignacionPorDia, setAsignacionPorDia] = useState<Record<string, string | null>>(
+    diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
+  );
 
   const navigate = useNavigate();
 
-  const toggleDia = (dia: string) => {
-    setDias((prev) =>
-      prev.includes(dia) ? prev.filter((d) => d !== dia) : [...prev, dia]
-    );
-  };
-
+  
   const handleSubmit = async () => {
-    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, dias, voluntariosAsignados});
+    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, asignacionPorDia,});
 
     if (errorMessage) {
       setError(errorMessage);
@@ -45,12 +49,12 @@ export default function NuevaColoniaPage() {
     setError(null);
 
     // TODO: Enviar los datos al backend mediante POST
-    console.log({ nombre, ubicacion, zona, dias });
+    console.log({ nombre, ubicacion, zona, asignacionPorDia });
 
     navigate('/colonias'); // redirige al dashboard de colonias
   };
 
-  const isValid = nombre && ubicacion && zona && dias.length > 0;
+  const isValid = nombre && ubicacion && zona && Object.values(asignacionPorDia).some(v => v !== null);
 
   return (
     <div
@@ -94,48 +98,54 @@ export default function NuevaColoniaPage() {
           onChange={(e) => {
             const nuevaZona = e.target.value;
             setZona(nuevaZona);
-        
-            // Simular consulta de voluntarios disponibles en esa zona
-            const disponibles = dummyVoluntarios[nuevaZona] || [];
-            setVoluntariosDisponibles(disponibles);
-            setVoluntariosAsignados([]); // Limpiar asignados si cambia la zona
-          }}
+          
+            const voluntariosZona = dummyVoluntarios[nuevaZona] || [];
+            setVoluntariosDisponibles(voluntariosZona);
+          
+            // Reiniciar asignación
+            setAsignacionPorDia(
+              diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
+            );
+          }}          
         />
 
-        {/* Días */}
-        <div>
-          <h2 className="text-white font-semibold mb-2">Días activos</h2>
-          <CheckboxGroup
-            options={diasSemana}
-            selected={dias}
-            onChange={toggleDia}
-            direction="row"
-            responsive
-          />
+        {/* Asignar voluntarios por día */}
+        <div className="w-full mt-4 space-y-3">
+          <h2 className="text-white font-semibold mb-2">Asignar voluntarios por día</h2>
+
+          {diasSemana.map((dia) => {
+            const disponiblesDia = voluntariosDisponibles.filter((v) => v.dias.includes(dia));
+
+            return (
+              <div key={dia} className="flex items-center gap-4">
+                <span className="w-20 text-white">{dia}</span>
+
+                {disponiblesDia.length > 0 ? (
+                  <select
+                    value={asignacionPorDia[dia] || ''}
+                    onChange={(e) =>
+                      setAsignacionPorDia((prev) => ({
+                        ...prev,
+                        [dia]: e.target.value || null,
+                      }))
+                    }
+                    className="px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-white/10 text-black
+                      border-purpleTheme-border focus:ring-2 focus:ring-purpleTheme-primary"
+                  >
+                    <option value="">Sin asignar</option>
+                    {disponiblesDia.map((v) => (
+                      <option key={v.nombre} value={v.nombre}>
+                        {v.nombre}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-white/70 text-sm">Aún no hay voluntarios</span>
+                )}
+              </div>
+            );
+          })}
         </div>
-
-        <div className="w-full">
-          <h2 className="text-white font-semibold mb-2">Voluntarios disponibles en esta zona</h2>
-
-          {zona.trim() === '' ? (
-            <p className="text-sm text-white/70">Introduce una zona para ver si hay voluntarios disponibles.</p>
-          ) : voluntariosDisponibles.length === 0 ? (
-            <p className="text-sm text-white/70">No hay voluntarios disponibles en esta zona actualmente.</p>
-          ) : (
-            <CheckboxGroup
-              options={voluntariosDisponibles}
-              selected={voluntariosAsignados}
-              onChange={(v) =>
-                setVoluntariosAsignados((prev) =>
-                  prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
-                )
-              }
-              direction="column"
-            />
-          )}
-        </div>
-
-
 
         {/* Botón */}
         <div className="w-full flex justify-center mt-2">
