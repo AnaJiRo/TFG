@@ -1,0 +1,1 @@
+export const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
