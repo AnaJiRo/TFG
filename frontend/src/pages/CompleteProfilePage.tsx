@@ -3,7 +3,7 @@ import Input from '../components/Input/Input';
 import Button from '../components/Button/Button';
 import FormContainer from '../components/FormContainer';
 import CheckboxGroup from '../components/Checkbox/CheckboxGroup';
-import SelectBox from '../components/SelectBox';
+import SelectBox from '../components/SelectBox/SelectBox';
 import { useNavigate } from 'react-router-dom';
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -93,6 +93,7 @@ export default function CompleteProfilePage() {
           <CheckboxGroup
             options={daysOfWeek}
             selected={availableDays}
+            direction='row'
             onChange={toggleDay}
             responsive
           />

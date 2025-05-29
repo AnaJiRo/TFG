@@ -8,6 +8,7 @@ import NuevaColoniaPage from './pages/NuevaColoniaPage';
 //import Dashboard from './pages/Dashboard'; // crea un componente si no existe aún
 import PrivateRoute from './routes/PrivateRoute';
 import DetalleColoniaPage from './pages/DetalleColoniaPage';
+import EditarColoniaPage from './pages/EditarColoniaPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/colonias" element={<DashboardColoniasPage />} />
       <Route path="/colonias/nueva" element={<NuevaColoniaPage />} />
       <Route path="/colonias/:id" element={<DetalleColoniaPage />} />
+      <Route path="/colonias/:id/editar" element={<EditarColoniaPage />} />
       
 
       {/* 🔐 Ruta protegida */}
