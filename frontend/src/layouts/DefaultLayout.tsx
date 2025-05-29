@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar/Navbar';
+import Footer from '../components/Footer/Footer';
 import { Outlet } from 'react-router-dom';
 
 export default function DefaultLayout() {
@@ -8,9 +9,11 @@ export default function DefaultLayout() {
       <Navbar />
 
       {/* Contenido de la página */}
-      <main className="flex-1 p-4 bg-gradient-to-br from-purple-800 to-fuchsia-400">
+      <main className="flex-1">
         <Outlet />
       </main>
+
+      <Footer />
     </div>
   );
 }

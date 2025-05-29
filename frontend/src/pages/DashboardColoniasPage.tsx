@@ -67,7 +67,8 @@ export default function DashboardColoniasPage() {
   return (
     <div className="min-h-screen bg-purple-400 text-white p-6 font-nunito">
       {/* Título principal */}
-      <h1 className="text-3xl font-bold font-poppins text-center mb-6">
+      <h1 className="text-4xl font-bold font-poppins text-center mb-6 flex items-center justify-center gap-4">
+        <img src="/assets/Colonias/pawhouse.svg" alt="Voluntarios" className="w-14 h-14" />
         GESTIÓN DE COLONIAS
       </h1>
 
@@ -113,7 +114,7 @@ export default function DashboardColoniasPage() {
           />
         ))}
       </div>
-s
+
       {/* TODO: Mostrar mensaje si no hay colonias disponibles */}
     </div>
   );
