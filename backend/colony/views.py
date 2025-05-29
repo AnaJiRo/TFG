@@ -1,3 +1,4 @@
+
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsAdmin
@@ -114,3 +115,32 @@ class AssignmentSummaryView(generics.GenericAPIView):
                     "asignaciones": colonies[colony.name]
                 })
             return Response(result)
+
+class AssignmentColonySummaryView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, colony_id):
+        from users.models import Availability
+        user = request.user
+        days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        colony = get_object_or_404(Colony, id=colony_id)
+
+        # Asignaciones por día
+        assignments = Assignment.objects.filter(colony=colony)
+        summary = {day: None for day in days}
+        for assignment in assignments:
+            summary[assignment.day] = assignment.volunteer.name if assignment.volunteer else None
+        assigned_users = Assignment.objects.filter(colony=colony).values_list('volunteer_id', 'day')
+        availability_by_day = {}
+        for day in days:
+            availability = Availability.objects.filter(zone=colony.zone, day=day).exclude(user_id__in=[v for v, d in assigned_users if d == day]).values('user').distinct().count()
+            availability_by_day[day] = availability
+        result={
+            "id": colony.id,
+            "colonia": colony.name,
+            "asignaciones": summary,
+            "voluntarios_disponibles": availability_by_day,
+            "zona": colony.zone.name if colony.zone else None,
+            "ubicacion": colony.ubication
+        }
+        return Response(result)
