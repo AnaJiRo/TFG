@@ -1,4 +1,11 @@
-import axios from './axiosInstance';
+// Obtener colonias
+export async function getColonies() {
+  const response = await axios.get(
+    "http://localhost:8000/api/colonies/colonies/assignments/summary/"
+  );
+  return response.data;
+}
+import axios from "./axiosInstance";
 
 type LoginPayload = {
   email: string;
@@ -6,7 +13,7 @@ type LoginPayload = {
 };
 
 export async function loginUser(data: LoginPayload) {
-  const response = await axios.post('/users/token/', data);
+  const response = await axios.post("/users/token/", data);
   return response.data;
 }
 
@@ -18,6 +25,6 @@ type RegisterPayload = {
 };
 
 export async function registerUser(data: RegisterPayload) {
-  const response = await axios.post('/register/', data); // ajusta la ruta según tu backend
+  const response = await axios.post("/register/", data); // ajusta la ruta según tu backend
   return response.data;
 }

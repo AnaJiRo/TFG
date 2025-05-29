@@ -1,14 +1,28 @@
-import { Colonia } from '../types/index'; //types/index.ts
+import { ColoniaAsignacion, DiaSemana } from "../types/index"; //types/index.ts
+import { diasSemana } from "../utils/constants";
 
 type ColoniaCardProps = {
-  colonia: Colonia;
+  colonia: ColoniaAsignacion;
   editable?: boolean;
   onClick?: (id: string) => void;
 };
 
-const diasOrden = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const diasApi = [
+  { key: "monday", label: "L" },
+  { key: "tuesday", label: "M" },
+  { key: "wednesday", label: "X" },
+  { key: "thursday", label: "J" },
+  { key: "friday", label: "V" },
+  { key: "saturday", label: "S" },
+  { key: "sunday", label: "D" },
+];
 
-export default function ColoniaCard({ colonia, editable = true, onClick }: ColoniaCardProps) {
+export default function ColoniaCard({
+  colonia,
+  editable = true,
+  onClick,
+}: ColoniaCardProps) {
+  console.log("ColoniaCard", colonia);
   return (
     <div
       onClick={() => onClick?.(colonia.id)}
@@ -16,23 +30,27 @@ export default function ColoniaCard({ colonia, editable = true, onClick }: Colon
     >
       <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
         <span>📍</span>
-        {colonia.nombre}
+        {colonia.colonia}
       </h2>
       <p className="text-purple-100 mb-4">Zona: {colonia.zona}</p>
 
       {/* Días de la semana */}
       <div className="flex justify-between font-semibold text-sm mb-1">
-        {diasOrden.map((dia) => (
-          <span key={dia}>{dia}</span>
+        {diasSemana.map((dia) => (
+          <span key={dia}>{dia || "-"}</span>
         ))}
       </div>
       <div className="flex justify-between text-xl">
-        {diasOrden.map((dia) => (
+        {diasApi.map(({ key }) => (
           <span
-            key={dia}
-            className={colonia.dias[dia] ? 'text-green-400' : 'text-red-400'}
+            key={key}
+            className={
+              colonia.asignaciones[key as DiaSemana]
+                ? "text-green-400"
+                : "text-red-400"
+            }
           >
-            {colonia.dias[dia] ? '🟢' : '🔴'}
+            {colonia.asignaciones[key as DiaSemana] ? "🟢" : "🔴"}
           </span>
         ))}
       </div>
@@ -40,8 +58,10 @@ export default function ColoniaCard({ colonia, editable = true, onClick }: Colon
       {/* Botón editable */}
       {editable && (
         <div className="mt-4 flex justify-center">
-          <button className="bg-fuchsiaTheme-primary text-white border border-purpleTheme-primary hover:bg-purple-700 
-          px-4 py-2 rounded-lg font-poppins transition-colors duration-300">
+          <button
+            className="bg-fuchsiaTheme-primary text-white border border-purpleTheme-primary hover:bg-purple-700 
+          px-4 py-2 rounded-lg font-poppins transition-colors duration-300"
+          >
             Ver detalles
           </button>
         </div>

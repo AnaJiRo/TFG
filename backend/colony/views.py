@@ -90,9 +90,11 @@ class AssignmentSummaryView(generics.GenericAPIView):
                     availability = Availability.objects.filter(zone=colony.zone, day=day).exclude(user_id__in=[v for v, d in assigned_users if d == day]).values('user').distinct().count()
                     availability_by_day[day] = availability
                 result.append({
+                    "id": colony.id,
                     "colonia": colony.name,
                     "asignaciones": summary,
-                    "voluntarios_disponibles": availability_by_day
+                    "voluntarios_disponibles": availability_by_day,
+                    "zona": colony.zone.name if colony.zone else None
                 })
             return Response(result)
 
