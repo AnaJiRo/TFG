@@ -2,6 +2,7 @@ from colony.models import Zone
 from rest_framework import serializers
 from .models import Availability
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -44,3 +45,15 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = Availability
         fields = ['id', 'user', 'day', 'zone']
         read_only_fields = ['id', 'user']
+
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # Obtener el token base
+        token = super().get_token(user)
+
+        token['role'] = user.role
+
+        return token
