@@ -20,7 +20,7 @@ export type ColoniaAsignacion = {
   id: string;
   colonia: string;
   zona: string;
-  ubicación?: string;
+  ubicacion?: string;
   asignaciones: Record<DiaSemana, string | null>;
   voluntarios_disponibles: Record<DiaSemana, number>;
 };

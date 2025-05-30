@@ -136,7 +136,7 @@ export default function DetalleColoniaPage() {
               />
               <div>
                 <p className="font-semibold">Ubicación:</p>
-                <p>{colonia.ubicación}</p>
+                <p>{colonia.ubicacion}</p>
               </div>
             </div>
 
