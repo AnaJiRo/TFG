@@ -3,36 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
 import Select from "../components/SelectBox/Select";
 import Button from "../components/Button/Button";
-import { diasSemana } from "../utils/constants";
+import { days, dayShortNames } from "../utils/constants";
+
+import { ColoniaAsignacion } from "../types";
 import {
   availableVolunteersByColony,
   createBulkAssignments,
   getSummaryByColony,
-} from "../api/authService";
-import { ColoniaAsignacion } from "../types";
-import axios from "axios";
-
-const days = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-] as const;
-
-export type DayKey = (typeof days)[number];
-
-export const dayShortNames: Record<DayKey, string> = {
-  monday: "L", // Lunes
-  tuesday: "M", // Martes
-  wednesday: "X", // Miércoles
-  thursday: "J", // Jueves
-  friday: "V", // Viernes
-  saturday: "S", // Sábado
-  sunday: "D", // Domingo
-};
+} from "../api/coloniasService";
 
 export default function DetalleColoniaPage() {
   const { id } = useParams<{ id: string }>();
@@ -62,6 +40,8 @@ export default function DetalleColoniaPage() {
     }));
   }
 
+  const [error, setError] = useState<string | null>(null);
+
   async function guardarAsignaciones() {
     if (!colonia?.id) return;
 
@@ -69,7 +49,7 @@ export default function DetalleColoniaPage() {
     const asignacionesFinales: Record<string, number | null> = {};
 
     days.forEach((dia) => {
-      if (asignacionesActualizadas.hasOwnProperty(dia)) {
+      if (Object.prototype.hasOwnProperty.call(asignacionesActualizadas, dia)) {
         asignacionesFinales[dia] = asignacionesActualizadas[dia];
       } else {
         // Si no, tomamos el nombre asignado actual y lo cruzamos con availableVolunteers
@@ -104,7 +84,6 @@ export default function DetalleColoniaPage() {
       return;
     }
     try {
-      setLoading(true);
       const summaryColony = await getSummaryByColony(id);
       const volunteersList = await availableVolunteersByColony(id);
 
@@ -119,13 +98,8 @@ export default function DetalleColoniaPage() {
     } catch (error) {
       console.error(error);
       setError("No se pudieron cargar las colonias");
-    } finally {
-      setLoading(false);
     }
   };
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchColonyDetails();

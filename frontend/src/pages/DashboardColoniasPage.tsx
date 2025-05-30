@@ -3,7 +3,7 @@ import Button from "../components/Button/Button";
 import ColoniaCard from "../components/ColoniaCard";
 import { ColoniaAsignacion } from "../types";
 import { useState, useEffect } from "react";
-import { getColonies } from "../api/authService";
+import { getColonies } from "../api/coloniasService";
 
 // Días en orden para mostrar en ColoniaCard (por si no vienen ordenados del backend)
 
