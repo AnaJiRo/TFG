@@ -1,3 +1,8 @@
+from users.models import Availability
+# Endpoint para asignaciones disponibles
+from rest_framework.views import APIView
+
+
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -144,3 +149,32 @@ class AssignmentColonySummaryView(generics.GenericAPIView):
             "ubicacion": colony.ubication
         }
         return Response(result)
+    
+
+class AvailableAssignmentsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, colony_id):
+        """
+        Devuelve todas las asignaciones posibles (día, voluntario) para una colonia determinada
+        que aún no están asignadas (disponibles).
+        """
+        colony = get_object_or_404(Colony, id=colony_id)
+        days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+        # Todas las disponibilidades de voluntarios para la zona de la colonia
+        availabilities = Availability.objects.filter(zone=colony.zone)
+        # Asignaciones ya existentes para la colonia
+        assigned = Assignment.objects.filter(colony=colony)
+        assigned_pairs = set((a.volunteer_id, a.day) for a in assigned)
+
+        # Solo las combinaciones (voluntario, día) que no están asignadas
+        available = []
+        for av in availabilities:
+            if (av.user_id, av.day) not in assigned_pairs:
+                available.append({
+                    "volunteer_id": av.user_id,
+                    "volunteer_email": av.user.email,
+                    "volunteer_name": getattr(av.user, 'name', av.user.username),
+                    "day": av.day
+                })
+        return Response(available)
