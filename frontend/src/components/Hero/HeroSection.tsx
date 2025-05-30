@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 export default function HeroSection() {
   return (
     <section
-      className="h-screen bg-cover bg-center flex flex-col items-center justify-center text-white text-center px-4"
+      className="h-screen bg-no-repeat bg-center bg-contain md:bg-cover flex flex-col items-center justify-center text-white text-center px-4"
       style={{
         backgroundImage: "url('/assets/landing/landing-bg.png')",
       }}
     >
        {/* Título principal */}
-      <h1 className="text-3xl md:text-5xl font-bold font-poppins drop-shadow-lg uppercase tracking-wide">
+      <h1 className="-mt-20 mb-2 text-3xl md:text-5xl font-bold font-poppins drop-shadow-lg uppercase tracking-wide">
         Gestor de Colonias
       </h1>
 
