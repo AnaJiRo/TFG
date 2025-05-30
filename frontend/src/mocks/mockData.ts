@@ -56,3 +56,33 @@ export const dummyEstadisticas = {
   totalVoluntarios: 12,
   diasSinCubrir: 5,
 };
+
+export const dummyColoniasSinCubrir = [
+    {
+      nombre: 'Triana',
+      zona: 'Centro',
+      diasFaltantes: ['M'],
+    },
+    {
+      nombre: 'Santa Cruz',
+      zona: 'Este',
+      diasFaltantes: ['D'],
+    },
+    {
+      nombre: 'Los Ratones',
+      zona: 'Norte',
+      diasFaltantes: diasSemana,
+    },
+  ];
+  
+  export const dummyVoluntariosHoy = [
+    { nombre: 'Laura S.', zona: 'Centro', estado: 'activo' },
+    { nombre: 'Carmen P.', zona: 'Norte', estado: 'activo' },
+    { nombre: 'Hugo', zona: 'Oeste', estado: 'baja' },
+    { nombre: 'Admin', zona: 'Todas', estado: 'admin' },
+  ];
+  
+  export const dummyDisponibilidadAdmin = {
+    dias: ['L', 'X'],
+    zona: 'Centro',
+  };
