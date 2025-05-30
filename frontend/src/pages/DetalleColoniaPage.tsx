@@ -85,11 +85,9 @@ export default function DetalleColoniaPage() {
     });
 
     try {
-      const bulkAssignments = await createBulkAssignments(
-        colonia.id,
-        asignacionesFinales
-      );
+      await createBulkAssignments(colonia.id, asignacionesFinales);
       alert("Asignaciones actualizadas correctamente");
+      await fetchColonyDetails();
 
       // Refrescamos los datos
       setAsignacionesActualizadas({});
@@ -100,37 +98,36 @@ export default function DetalleColoniaPage() {
     }
   }
 
+  const fetchColonyDetails = async () => {
+    if (!id) {
+      setError("ID de colonia no especificado");
+      return;
+    }
+    try {
+      setLoading(true);
+      const summaryColony = await getSummaryByColony(id);
+      const volunteersList = await availableVolunteersByColony(id);
+
+      // Agrupar voluntarios por día
+      const agrupadoPorDia = days.reduce((acc, dia) => {
+        acc[dia] = volunteersList.filter((v: { day: string }) => v.day === dia);
+        return acc;
+      }, {} as typeof availableVolunteers);
+
+      setColonia(summaryColony);
+      setAvailableVolunteers(agrupadoPorDia);
+    } catch (error) {
+      console.error(error);
+      setError("No se pudieron cargar las colonias");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchColonyDetails = async () => {
-      if (!id) {
-        setError("ID de colonia no especificado");
-        return;
-      }
-      try {
-        setLoading(true);
-        const summaryColony = await getSummaryByColony(id);
-        const volunteersList = await availableVolunteersByColony(id);
-
-        // Agrupar voluntarios por día
-        const agrupadoPorDia = days.reduce((acc, dia) => {
-          acc[dia] = volunteersList.filter(
-            (v: { day: string }) => v.day === dia
-          );
-          return acc;
-        }, {} as typeof availableVolunteers);
-
-        setColonia(summaryColony);
-        setAvailableVolunteers(agrupadoPorDia);
-      } catch (error) {
-        console.error(error);
-        setError("No se pudieron cargar las colonias");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchColonyDetails();
   }, []);
 
