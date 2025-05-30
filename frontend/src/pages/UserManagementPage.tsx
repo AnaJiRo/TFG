@@ -88,11 +88,17 @@ export default function UserManagementPage() {
               <td className="p-3">{user.phone}</td>
               <td className="p-3 capitalize">{user.role}</td>
               <td className="p-3 space-x-2">
-                    <div className="flex flex-col gap-2">
-                        <Button label="Edit" onClick={() => editUser(user.id)} variant="secondary" />
-                        <Button label="Delete" onClick={() => deleteUser(user.id)} variant="error" />
-                        {user.role !== 'admin' && (
-                        <Button label="Promote" onClick={() => promoteUser(user.id)} variant="tertiary" />
+                    <div className="flex gap-1 items-center">
+                    <button onClick={() => editUser(user.id)} className="w-8 h-8 flex items-center justify-center rounded-full  bg-purple-600 hover:bg-purple-700 text-white">
+                        <img src="/assets/icons/edit.svg" alt="Edit" className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => deleteUser(user.id)} className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white">
+                        <img src="/assets/icons/trash.svg" alt="Delete" className="w-4 h-4" />
+                    </button>
+                    {user.role !== 'admin' && (
+                        <button onClick={() => promoteUser(user.id)} className="w-8 h-8 flex items-center justify-center rounded-md bg-fuchsia-600 hover:bg-fuchsia-700 text-white">
+                            <img src="/assets/icons/start.svg" alt="Promote" className="w-4 h-4" />
+                        </button>
                         )}
                     </div> 
               </td>
