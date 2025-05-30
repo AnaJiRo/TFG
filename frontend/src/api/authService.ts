@@ -35,6 +35,17 @@ export async function availableVolunteersByColony(id: string) {
   return response.data;
 }
 
+export async function createBulkAssignments(
+  id: string,
+  assignments: Record<string, number | null>
+) {
+  const response = await axios.put(
+    `http://localhost:8000/api/colonies/colonies/${id}/assignments/bulk/`,
+    assignments
+  );
+  return response.data;
+}
+
 type LoginPayload = {
   email: string;
   password: string;

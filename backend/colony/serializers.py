@@ -3,7 +3,10 @@ from .models import Zone, Colony
 
 from .models import Assignment
 from users.models import Availability
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 
 class ZoneSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,4 +53,22 @@ class AssignmentSerializer(serializers.ModelSerializer):
                 "Ya existe una asignación para este voluntario y día."
             )
 
+        return data
+
+
+
+class AssignmentBulkUpdateSerializer(serializers.Serializer):
+    monday = serializers.IntegerField(allow_null=True, required=False)
+    tuesday = serializers.IntegerField(allow_null=True, required=False)
+    wednesday = serializers.IntegerField(allow_null=True, required=False)
+    thursday = serializers.IntegerField(allow_null=True, required=False)
+    friday = serializers.IntegerField(allow_null=True, required=False)
+    saturday = serializers.IntegerField(allow_null=True, required=False)
+    sunday = serializers.IntegerField(allow_null=True, required=False)
+
+    def validate(self, data):
+        for day, volunteer_id in data.items():
+            if volunteer_id is not None:
+                if not User.objects.filter(id=volunteer_id).exists():
+                    raise serializers.ValidationError({day: "El voluntario no existe."})
         return data

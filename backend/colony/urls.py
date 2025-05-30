@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import ZoneListCreateView, ZoneDetailView, ColonyListCreateView, ColonyDetailView, AssignmentListCreateView, AssignmentRetrieveUpdateDestroyView, AssignmentSummaryView, AssignmentColonySummaryView, AvailableAssignmentsView
+from .views import AssignmentBulkUpdateView, ZoneListCreateView, ZoneDetailView, ColonyListCreateView, ColonyDetailView, AssignmentListCreateView, AssignmentRetrieveUpdateDestroyView, AssignmentSummaryView, AssignmentColonySummaryView, AvailableAssignmentsView
 
 urlpatterns = [
     path('zones/', ZoneListCreateView.as_view(), name='zone-list-create'),
@@ -12,5 +12,7 @@ urlpatterns = [
     path('colonies/assignments/summary/', AssignmentSummaryView.as_view(), name='assignment-summary'),
     path('colonies/assignments/summary/<int:colony_id>/', AssignmentColonySummaryView.as_view(), name='assignment-colony-summary'),
     path('assignments/<int:pk>/', AssignmentRetrieveUpdateDestroyView.as_view(), name='assignment-detail'),
+    path('colonies/<int:colony_id>/assignments/bulk/', AssignmentBulkUpdateView.as_view(), name='assignment-bulk-update'),
+
 ]
 

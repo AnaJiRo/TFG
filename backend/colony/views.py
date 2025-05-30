@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsAdmin
 from .models import Zone, Colony
 from .models import Assignment
-from .serializers import ZoneSerializer, ColonySerializer, AssignmentSerializer
+from .serializers import AssignmentBulkUpdateSerializer, ZoneSerializer, ColonySerializer, AssignmentSerializer
 from users.models import CustomUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -238,3 +238,40 @@ class AvailableAssignmentsView(APIView):
                 )
 
         return Response(available)
+
+
+class AssignmentBulkUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def put(self, request, colony_id):
+        serializer = AssignmentBulkUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        colony = get_object_or_404(Colony, id=colony_id)
+        days = serializer.fields.keys()
+
+        # Cargar todas las asignaciones actuales
+        existing = Assignment.objects.filter(colony=colony)
+        existing_map = {a.day: a for a in existing}
+
+        for day in days:
+            new_volunteer_id = data.get(day, None)
+            current_assignment = existing_map.get(day)
+
+            if new_volunteer_id is None:
+                if current_assignment:
+                    current_assignment.delete() 
+            else:
+                if current_assignment:
+                    if current_assignment.volunteer_id != new_volunteer_id:
+                        current_assignment.volunteer_id = new_volunteer_id
+                        current_assignment.save()  
+                else:
+                    Assignment.objects.create(
+                        colony=colony,
+                        volunteer_id=new_volunteer_id,
+                        day=day
+                    )  
+
+        return Response({"message": "Asignaciones actualizadas correctamente."}, status=status.HTTP_200_OK)

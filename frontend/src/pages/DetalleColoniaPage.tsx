@@ -6,9 +6,11 @@ import Button from "../components/Button/Button";
 import { diasSemana } from "../utils/constants";
 import {
   availableVolunteersByColony,
+  createBulkAssignments,
   getSummaryByColony,
 } from "../api/authService";
 import { ColoniaAsignacion } from "../types";
+import axios from "axios";
 
 const days = [
   "monday",
@@ -58,6 +60,44 @@ export default function DetalleColoniaPage() {
       ...prev,
       [dia]: volunteerId,
     }));
+  }
+
+  async function guardarAsignaciones() {
+    if (!colonia?.id) return;
+
+    // Paso 1: Construir asignaciones combinadas
+    const asignacionesFinales: Record<string, number | null> = {};
+
+    days.forEach((dia) => {
+      if (asignacionesActualizadas.hasOwnProperty(dia)) {
+        asignacionesFinales[dia] = asignacionesActualizadas[dia];
+      } else {
+        // Si no, tomamos el nombre asignado actual y lo cruzamos con availableVolunteers
+        const disponibles = availableVolunteers[dia] || [];
+        const nombreAsignado = colonia.asignaciones?.[dia];
+
+        const voluntario = disponibles.find(
+          (v) => v.volunteer_name === nombreAsignado
+        );
+
+        asignacionesFinales[dia] = voluntario ? voluntario.volunteer_id : null;
+      }
+    });
+
+    try {
+      const bulkAssignments = await createBulkAssignments(
+        colonia.id,
+        asignacionesFinales
+      );
+      alert("Asignaciones actualizadas correctamente");
+
+      // Refrescamos los datos
+      setAsignacionesActualizadas({});
+      // Opcional: recargar la colonia desde el backend si quieres ver los cambios
+    } catch (error) {
+      console.error("Error al guardar asignaciones:", error);
+      alert("Error al guardar asignaciones");
+    }
   }
 
   const [loading, setLoading] = useState(false);
@@ -220,7 +260,7 @@ export default function DetalleColoniaPage() {
               <Button
                 label="Guardar asignación"
                 variant="tertiary"
-                onClick={() => null}
+                onClick={guardarAsignaciones}
               />
             </div>
           </div>
