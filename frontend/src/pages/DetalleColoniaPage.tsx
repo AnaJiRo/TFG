@@ -180,14 +180,16 @@ export default function DetalleColoniaPage() {
                 label: v.volunteer_name,
               }));
 
-              console.log("Opciones de voluntarios:", options);
-              console.log("voluntarios disponibles:", disponibles);
-              console.log("availableVolunteers:", availableVolunteers);
+              const asignadoNombre = colonia?.asignaciones?.[dia] ?? null;
 
-              // Voluntario actualmente asignado (esto sigue viniendo de colonia.asignaciones)
+              const voluntarioAsignado = disponibles.find(
+                (v) => v.volunteer_name === asignadoNombre
+              );
+
+              // ID como string (solo si existe). Si el usuario ya cambió el valor, usamos ese primero
               const asignado =
                 asignacionesActualizadas[dia]?.toString() ??
-                colonia?.asignaciones?.[dia]?.[0]?.volunteer_id?.toString() ??
+                voluntarioAsignado?.volunteer_id?.toString() ??
                 "";
 
               return (
