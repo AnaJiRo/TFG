@@ -1,4 +1,3 @@
-// src/components/Button/Button.tsx
 
 import React from 'react';
 
@@ -8,9 +7,13 @@ type ButtonProps = {
   onClick?: () => void;        // Función que se ejecuta al hacer clic
   variant?: 'primary' | 'secondary' | 'tertiary' | 'error'; // Tipos de estilos disponibles
   disabled?: boolean;          // Si el botón está deshabilitado
+  type?: 'button' | 'submit' | 'reset';
+  leftIcon?: React.ReactNode;  // Icono opcional a la izquierda
+  rightIcon?: React.ReactNode; // Icono opcional a la derecha
 };
 
-export default function Button({ label, onClick, variant = 'primary', disabled = false }: ButtonProps) {
+export default function Button({ label, onClick, variant = 'primary', disabled = false, type = 'button', leftIcon,
+  rightIcon }: ButtonProps) {
   // Estilos condicionales según el tipo de botón
   const baseStyles = 'px-4 py-2 rounded-lg font-poppins transition-colors duration-300 flex justify-center';
   const variants = {
@@ -22,6 +25,7 @@ export default function Button({ label, onClick, variant = 'primary', disabled =
 
   return (
     <button
+      type={type || 'button'} 
       onClick={onClick}
       disabled={disabled}
       className={`
@@ -30,7 +34,9 @@ export default function Button({ label, onClick, variant = 'primary', disabled =
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       `}
     >
-      {label}
+      {leftIcon && <span className="w-4 h-4">{leftIcon}</span>}
+      <span>{label}</span>
+      {rightIcon && <span className="w-4 h-4">{rightIcon}</span>}
     </button>
   );
 }

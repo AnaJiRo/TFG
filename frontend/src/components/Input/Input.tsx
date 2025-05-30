@@ -1,7 +1,8 @@
 import React from 'react';
 
 type InputProps = {
-  label: string;                // Etiqueta visible sobre el input
+  label: string;            // Etiqueta visible sobre el input
+  name: string;               
   placeholder?: string;         // Texto que se muestra dentro del input
   type?: 'text' | 'email' | 'password'; // Tipo de campo
   value?: string;               // Valor controlado del input
@@ -11,6 +12,7 @@ type InputProps = {
 
 export default function Input({
   label,
+  name,
   placeholder = '',
   type = 'text',
   value,
@@ -27,6 +29,7 @@ export default function Input({
       {/* Campo de entrada */}
       <input
         type={type}
+        name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

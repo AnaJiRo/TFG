@@ -1,5 +1,6 @@
 // src/pages/UserManagementPage.tsx
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button  from '../components/Button/Button';
 import Input  from '../components/Input/Input';
 
@@ -16,6 +17,7 @@ interface User {
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Aquí deberías hacer la llamada al backend para obtener los usuarios
@@ -32,10 +34,11 @@ export default function UserManagementPage() {
     console.log(`Promover usuario con ID ${id}`);
   };
 
+  //No se si la ruta esta bien
   const editUser = (id: number) => {
-    // Lógica para redirigir a otra vista de edición
-    console.log(`Editar usuario con ID ${id}`);
+    navigate(`userManagement/${id}editar`);
   };
+
 
   const deleteUser = (id: number) => {
     // Lógica para eliminar usuario
@@ -56,14 +59,11 @@ export default function UserManagementPage() {
         <div className="max-w-sm w-full">
           <Input
             label="Search"
+            name=''
             placeholder="Search user by name..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <img
-             src="/assets/icons/lupa.svg" alt="Lupa"
-             className="absolute right-3 top-[45px] w-4 h-4 opacity-70"
-            />
         </div>
         <Button label="+ Add Volunteer" onClick={() => console.log('Añadir usuario')} variant="tertiary" />
       </div>
