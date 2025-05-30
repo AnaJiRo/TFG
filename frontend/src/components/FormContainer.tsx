@@ -11,7 +11,7 @@ export default function FormContainer({
 }: FormContainerProps) {
   return (
     <div
-      className={`w-full ${maxWidth} bg-fuchsia-300/80 backdrop-blur-md px-6 py-6 rounded-2xl shadow-lg flex flex-col gap-6 ${className}`}
+      className={`w-full ${maxWidth} bg-fuchsia-300/80 backdrop-blur-md px-10 py-6 rounded-2xl shadow-lg flex flex-col gap-6 ${className}`}
     >
       {children}
     </div>
