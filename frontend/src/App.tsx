@@ -10,6 +10,7 @@ import NuevaColoniaPage from './pages/NuevaColoniaPage';
 import PrivateRoute from './routes/PrivateRoute';
 import DetalleColoniaPage from './pages/DetalleColoniaPage';
 import EditarColoniaPage from './pages/EditarColoniaPage';
+import UserManagementPage from './pages/UserManagementPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/colonias/nueva" element={<NuevaColoniaPage />} />
         <Route path="/colonias/:id" element={<DetalleColoniaPage />} />
         <Route path="/colonias/:id/editar" element={<EditarColoniaPage />} />
+        <Route path="/userManagement" element={<UserManagementPage />} />
       </Route>
 
       {/* Rutas sin navbar */}
