@@ -71,12 +71,12 @@ export default function CompleteProfilePage() {
 
         {/*Esto podia cambiar, no es fijo*/}
         {/* Localidad */}
-        <Input
-          label="Localidad"
-          type="text"
-          placeholder="Ej: Los Palacios"
+        <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
+        <SelectBox
+          label=""
           value={locality}
-          onChange={(e) => setLocality(e.target.value)}
+          onChange={setLocality}
+          options={dummyZones}
         />
 
         {/* Días disponibles */}
