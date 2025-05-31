@@ -4,7 +4,8 @@ import FormContainer from "../components/FormContainer";
 import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
 import SelectBox from "../components/SelectBox/SelectBox";
 import { useNavigate } from "react-router-dom";
-import { getAllZones, Zone } from "../api/coloniasService";
+import { getAllZones, Zone, createAvailability } from "../api/coloniasService";
+import { jwtDecode } from "jwt-decode";
 
 const daysOfWeek = [
   "Lunes",
@@ -15,6 +16,16 @@ const daysOfWeek = [
   "Sábado",
   "Domingo",
 ];
+
+const daysMap: Record<string, string> = {
+  Lunes: "monday",
+  Martes: "tuesday",
+  Miércoles: "wednesday",
+  Jueves: "thursday",
+  Viernes: "friday",
+  Sábado: "saturday",
+  Domingo: "sunday",
+};
 
 export default function CompleteProfilePage() {
   const [locality, setLocality] = useState("");
@@ -42,14 +53,33 @@ export default function CompleteProfilePage() {
 
     setError(null);
 
-    // TODO: enviar datos al backend para completar el perfil del voluntario
-    console.log({
-      locality,
-      availableDays,
-      selectedZone,
-    });
+    try {
+      // Obtener el access_token de localStorage (o de donde lo guardes)
+      const token = localStorage.getItem("access_token");
+      if (!token) return setError("No se encontró el token de acceso");
+      const decoded: any = jwtDecode(token);
+      const userId = decoded.user_id;
 
-    navigate("/dashboard"); // o siguiente paso
+      // Busca el id de la zona seleccionada
+      const zoneObj = zones.find((z) => z.name === selectedZone);
+      if (!zoneObj) return setError("Zona no encontrada");
+
+      // Crea una disponibilidad por cada día seleccionado
+      await Promise.all(
+        availableDays.map((day) =>
+          createAvailability({
+            user: userId,
+            day: daysMap[day],
+            zone: zoneObj.id,
+          })
+        )
+      );
+
+      navigate("/dashboard"); // o siguiente paso
+    } catch (err) {
+      setError("Error al guardar la disponibilidad. Intenta de nuevo.");
+      console.error(err);
+    }
   };
 
   const getZones = async () => {
