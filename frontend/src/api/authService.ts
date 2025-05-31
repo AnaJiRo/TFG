@@ -15,6 +15,7 @@ type RegisterPayload = {
   lastname: string;
   email: string;
   password: string;
+  phone: string;
 };
 
 export async function registerUser(data: RegisterPayload) {
