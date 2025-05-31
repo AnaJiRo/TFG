@@ -55,3 +55,17 @@ export async function getAllZones(): Promise<Zone[]> {
   const response = await axios.get("/colonies/zones/");
   return response.data;
 }
+
+export type availability = {
+  user: number;
+  day: string;
+  zone: number;
+};
+
+// create availability
+export async function createAvailability(
+  data: availability
+): Promise<availability> {
+  const response = await axios.post("/users/availability/", data);
+  return response.data;
+}

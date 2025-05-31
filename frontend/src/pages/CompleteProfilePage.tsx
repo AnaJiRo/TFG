@@ -15,17 +15,15 @@ const daysOfWeek = [
   "Sábado",
   "Domingo",
 ];
-const dummyZones = ["Zona Norte", "Zona Centro", "Zona Sur"]; // TODO: cargar dinámicamente según localidad
 
 export default function CompleteProfilePage() {
   const [locality, setLocality] = useState("");
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [selectedZone, setSelectedZone] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [zones, setZones] = useState<Zone[]>([]); // Para almacenar zonas obtenidas del backend
+  const [zones, setZones] = useState<Zone[]>([]);
   const localities = Array.from(new Set(zones.map((zone) => zone.locality)));
 
-  // Filtrar zonas por localidad seleccionada
   const filteredZones = zones.filter((zone) => zone.locality === locality);
 
   const navigate = useNavigate();
