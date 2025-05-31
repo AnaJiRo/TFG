@@ -46,7 +46,7 @@ export async function createBulkAssignments(
   return response.data;
 }
 
-type Zone = {
+export type Zone = {
   id: number;
   name: string;
   locality: string;

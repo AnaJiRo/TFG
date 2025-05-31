@@ -4,7 +4,7 @@ import FormContainer from "../components/FormContainer";
 import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
 import SelectBox from "../components/SelectBox/SelectBox";
 import { useNavigate } from "react-router-dom";
-import { getAllZones } from "../api/coloniasService";
+import { getAllZones, Zone } from "../api/coloniasService";
 
 const daysOfWeek = [
   "Lunes",
@@ -22,6 +22,11 @@ export default function CompleteProfilePage() {
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [selectedZone, setSelectedZone] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [zones, setZones] = useState<Zone[]>([]); // Para almacenar zonas obtenidas del backend
+  const localities = Array.from(new Set(zones.map((zone) => zone.locality)));
+
+  // Filtrar zonas por localidad seleccionada
+  const filteredZones = zones.filter((zone) => zone.locality === locality);
 
   const navigate = useNavigate();
 
@@ -52,6 +57,8 @@ export default function CompleteProfilePage() {
   const getZones = async () => {
     try {
       const zones = await getAllZones();
+      setZones(zones);
+
       console.log("Zonas disponibles:", zones);
     } catch (error) {
       console.error("Error al obtener zonas:", error);
@@ -89,8 +96,11 @@ export default function CompleteProfilePage() {
         <SelectBox
           label=""
           value={locality}
-          onChange={setLocality}
-          options={dummyZones}
+          onChange={(value) => {
+            setLocality(value);
+            setSelectedZone(""); // limpiar zona al cambiar localidad
+          }}
+          options={localities}
         />
 
         {/* Días disponibles */}
@@ -113,7 +123,7 @@ export default function CompleteProfilePage() {
             label=""
             value={selectedZone}
             onChange={setSelectedZone}
-            options={dummyZones}
+            options={filteredZones.map((zone) => zone.name)}
           />
           {/* TODO: reemplazar dummyZones por llamada a API de zonas según localidad */}
         </div>
