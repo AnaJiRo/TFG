@@ -1,21 +1,41 @@
-import { useState } from 'react';
-import Input from '../components/Input/Input';
-import Button from '../components/Button/Button';
-import FormContainer from '../components/FormContainer';
-import CheckboxGroup from '../components/Checkbox/CheckboxGroup';
-import SelectBox from '../components/SelectBox/SelectBox';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import Button from "../components/Button/Button";
+import FormContainer from "../components/FormContainer";
+import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
+import SelectBox from "../components/SelectBox/SelectBox";
+import { useNavigate } from "react-router-dom";
+import { getAllZones, Zone, createAvailability } from "../api/coloniasService";
+import { jwtDecode } from "jwt-decode";
 
-const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const dummyZones = ['Zona Norte', 'Zona Centro', 'Zona Sur']; // TODO: cargar dinámicamente según localidad
+const daysOfWeek = [
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+  "Domingo",
+];
+
+const daysMap: Record<string, string> = {
+  Lunes: "monday",
+  Martes: "tuesday",
+  Miércoles: "wednesday",
+  Jueves: "thursday",
+  Viernes: "friday",
+  Sábado: "saturday",
+  Domingo: "sunday",
+};
 
 export default function CompleteProfilePage() {
-  const [phone, setPhone] = useState('');
-  const [locality, setLocality] = useState('');
-  const [province, setProvince] = useState('');
+  const [locality, setLocality] = useState("");
   const [availableDays, setAvailableDays] = useState<string[]>([]);
-  const [selectedZone, setSelectedZone] = useState('');
+  const [selectedZone, setSelectedZone] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const localities = Array.from(new Set(zones.map((zone) => zone.locality)));
+
+  const filteredZones = zones.filter((zone) => zone.locality === locality);
 
   const navigate = useNavigate();
 
@@ -26,25 +46,59 @@ export default function CompleteProfilePage() {
   };
 
   const handleSubmit = async () => {
-    if (!phone.trim() || !locality.trim()) return setError('Rellena los campos obligatorios');
-    if (availableDays.length === 0) return setError('Selecciona al menos un día');
-    if (!selectedZone) return setError('Selecciona una zona');
+    if (!locality.trim()) return setError("Rellena los campos obligatorios");
+    if (availableDays.length === 0)
+      return setError("Selecciona al menos un día");
+    if (!selectedZone) return setError("Selecciona una zona");
 
     setError(null);
 
-    // TODO: enviar datos al backend para completar el perfil del voluntario
-    console.log({
-      phone,
-      province,
-      locality,
-      availableDays,
-      selectedZone,
-    });
+    try {
+      // Obtener el access_token de localStorage (o de donde lo guardes)
+      const token = localStorage.getItem("access_token");
+      if (!token) return setError("No se encontró el token de acceso");
+      const decoded: any = jwtDecode(token);
+      const userId = decoded.user_id;
 
-    navigate('/dashboard'); // o siguiente paso
+      // Busca el id de la zona seleccionada
+      const zoneObj = zones.find((z) => z.name === selectedZone);
+      if (!zoneObj) return setError("Zona no encontrada");
+
+      // Crea una disponibilidad por cada día seleccionado
+      await Promise.all(
+        availableDays.map((day) =>
+          createAvailability({
+            user: userId,
+            day: daysMap[day],
+            zone: zoneObj.id,
+          })
+        )
+      );
+
+      navigate("/dashboard"); // o siguiente paso
+    } catch (err) {
+      setError("Error al guardar la disponibilidad. Intenta de nuevo.");
+      console.error(err);
+    }
   };
 
-  const isValid = phone && locality && availableDays.length > 0 && selectedZone;
+  const getZones = async () => {
+    try {
+      const zones = await getAllZones();
+      setZones(zones);
+
+      console.log("Zonas disponibles:", zones);
+    } catch (error) {
+      console.error("Error al obtener zonas:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Cargar zonas al montar el componente
+    getZones();
+  }, []);
+
+  const isValid = locality && availableDays.length > 0 && selectedZone;
 
   return (
     <div
@@ -54,38 +108,28 @@ export default function CompleteProfilePage() {
       <FormContainer>
         {/* Título */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white font-poppins">¡Bienvenido!</h1>
-          <p className="text-white/90 mt-1 font-nunito">Completa tu información para terminar</p>
+          <h1 className="text-2xl font-bold text-white font-poppins">
+            ¡Bienvenido!
+          </h1>
+          <p className="text-white/90 mt-1 font-nunito">
+            Completa tu información para terminar
+          </p>
         </div>
 
-        {/* Teléfono */}
-        <Input
-          label="Teléfono"
-          type="text"
-          placeholder="Ej: 600123456"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
         {/*Esto podia cambiar, no es fijo*/}
-        {/* Provincia (opcional) */}
-        <Input
-          label="Provincia"
-          type="text"
-          placeholder="Ej: Sevilla"
-          value={province}
-          onChange={(e) => setProvince(e.target.value)}
-        />
 
         {/*Esto podia cambiar, no es fijo*/}
         {/* Localidad */}
-        <Input
-          label="Localidad"
-          type="text"
-          placeholder="Ej: Los Palacios"
+        <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
+        <SelectBox
+          label=""
           value={locality}
-          onChange={(e) => setLocality(e.target.value)}
+          onChange={(value) => {
+            setLocality(value);
+            setSelectedZone(""); // limpiar zona al cambiar localidad
+          }}
+          options={localities}
         />
-
 
         {/* Días disponibles */}
         <div>
@@ -93,7 +137,7 @@ export default function CompleteProfilePage() {
           <CheckboxGroup
             options={daysOfWeek}
             selected={availableDays}
-            direction='row'
+            direction="row"
             onChange={toggleDay}
             responsive
           />
@@ -107,7 +151,7 @@ export default function CompleteProfilePage() {
             label=""
             value={selectedZone}
             onChange={setSelectedZone}
-            options={dummyZones}
+            options={filteredZones.map((zone) => zone.name)}
           />
           {/* TODO: reemplazar dummyZones por llamada a API de zonas según localidad */}
         </div>
