@@ -18,7 +18,7 @@ from django.shortcuts import get_object_or_404
 
 class ZoneListCreateView(generics.ListCreateAPIView):
     serializer_class = ZoneSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = Zone.objects.all()
@@ -31,7 +31,7 @@ class ZoneListCreateView(generics.ListCreateAPIView):
 class ZoneDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Zone.objects.all()
     serializer_class = ZoneSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated]
 
 
 class ColonyListCreateView(generics.ListCreateAPIView):

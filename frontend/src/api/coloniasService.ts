@@ -45,3 +45,13 @@ export async function createBulkAssignments(
   );
   return response.data;
 }
+
+type Zone = {
+  id: number;
+  name: string;
+  locality: string;
+};
+export async function getAllZones(): Promise<Zone[]> {
+  const response = await axios.get("/colonies/zones/");
+  return response.data;
+}

@@ -1,10 +1,10 @@
-import { useState } from "react";
-import Input from "../components/Input/Input";
+import { useEffect, useState } from "react";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
 import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
 import SelectBox from "../components/SelectBox/SelectBox";
 import { useNavigate } from "react-router-dom";
+import { getAllZones } from "../api/coloniasService";
 
 const daysOfWeek = [
   "Lunes",
@@ -48,6 +48,20 @@ export default function CompleteProfilePage() {
 
     navigate("/dashboard"); // o siguiente paso
   };
+
+  const getZones = async () => {
+    try {
+      const zones = await getAllZones();
+      console.log("Zonas disponibles:", zones);
+    } catch (error) {
+      console.error("Error al obtener zonas:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Cargar zonas al montar el componente
+    getZones();
+  }, []);
 
   const isValid = locality && availableDays.length > 0 && selectedZone;
 

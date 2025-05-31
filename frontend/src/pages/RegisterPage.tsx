@@ -2,7 +2,7 @@ import { useState } from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../api/authService";
+import { loginUser, registerUser } from "../api/authService";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -17,7 +17,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async () => {
     try {
-      const response = await registerUser({
+      await registerUser({
         username: username,
         name,
         lastname,
@@ -26,9 +26,14 @@ export default function RegisterPage() {
         phone,
       });
 
+      const loginResponse = await loginUser({
+        email,
+        password,
+      });
+
       // Si el backend devuelve tokens:
-      localStorage.setItem("access_token", response.access);
-      localStorage.setItem("refresh_token", response.refresh);
+      localStorage.setItem("access_token", loginResponse.access);
+      localStorage.setItem("refresh_token", loginResponse.refresh);
 
       // Redirige tras registrarse a la vista de completar perfil
       navigate("/completar-perfil");
