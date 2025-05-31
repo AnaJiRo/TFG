@@ -11,6 +11,7 @@ export async function loginUser(data: LoginPayload) {
 }
 
 type RegisterPayload = {
+  username: string;
   name: string;
   lastname: string;
   email: string;
@@ -19,6 +20,6 @@ type RegisterPayload = {
 };
 
 export async function registerUser(data: RegisterPayload) {
-  const response = await axios.post("/register/", data); // ajusta la ruta según tu backend
+  const response = await axios.post("/users/register/", data); // ajusta la ruta según tu backend
   return response.data;
 }

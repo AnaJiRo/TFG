@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/authService";
 
 export default function RegisterPage() {
+  const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     try {
       const response = await registerUser({
+        username: username,
         name,
         lastname,
         email,
@@ -55,6 +57,13 @@ export default function RegisterPage() {
 
         {/* Campos */}
         <div className="w-full flex flex-col gap-4">
+          <Input
+            label="Nombre de usuario"
+            type="text"
+            placeholder="Tu usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
           <Input
             label="Nombre"
             type="text"
