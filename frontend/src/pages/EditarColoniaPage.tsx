@@ -21,6 +21,7 @@ export default function EditarColoniaPage() {
   const [error, setError] = useState<string | null>(null);
   const [localicy, setLocality] = useState("");
   const [zonasDisponibles, setZonasDisponibles] = useState<string[]>([]);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
   const fetchColonyDetails = async () => {
     if (!id) {
@@ -73,6 +74,12 @@ export default function EditarColoniaPage() {
         ubication: ubicacion,
         zone: zona,
       });
+
+      setMensajeExito("Datos actualizados correctamente");
+
+      setTimeout(() => {
+        setMensajeExito(null);
+      }, 3000);
     } catch (error) {
       console.error(error);
       setError("No se pudo crear la colonia");
@@ -133,14 +140,18 @@ export default function EditarColoniaPage() {
           </div>
         </div>
 
-        <div className="w-full flex justify-center mt-4">
+        <div className="w-full flex flex-col items-center mt-4 space-y-2">
+          {mensajeExito && (
+            <p className="text-sm text-green-400">{mensajeExito}</p>
+          )}
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
           <Button
             label="Guardar cambios"
             variant="tertiary"
             onClick={handleSubmit}
             disabled={!isValid}
           />
-          {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
         </div>
 
         <img
