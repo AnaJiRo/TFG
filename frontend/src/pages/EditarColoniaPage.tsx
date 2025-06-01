@@ -6,8 +6,11 @@ import Select from "../components/SelectBox/Select";
 import { useNavigate, useParams } from "react-router-dom";
 import { diasSemana } from "../utils/constants";
 import { validateColoniaData } from "../utils/validators";
-import { getSummaryByColony } from "../api/coloniasService";
-import { ColoniaAsignacion } from "../types";
+import {
+  Colonia,
+  getColoniasById,
+  getSummaryByColony,
+} from "../api/coloniasService";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
@@ -24,7 +27,7 @@ export default function EditarColoniaPage() {
   >([]);
   const [error, setError] = useState<string | null>(null);
 
-  const [colonia, setColonia] = useState<ColoniaAsignacion | null>(null);
+  const [colonia, setColonia] = useState<Colonia | null>(null);
 
   const fetchColonyDetails = async () => {
     if (!id) {
@@ -32,12 +35,12 @@ export default function EditarColoniaPage() {
       return;
     }
     try {
-      const summaryColony = await getSummaryByColony(id);
+      const colony = await getColoniasById(id);
 
-      setColonia(summaryColony);
-      setNombre(summaryColony.colonia);
-      setUbicacion(summaryColony.ubicacion);
-      setZona(summaryColony.zona);
+      setColonia(colony);
+      setNombre(colony.name);
+      setUbicacion(colony.ubication);
+      setZona(colony.zone);
     } catch (error) {
       console.error(error);
       setError("No se pudieron cargar las colonias");

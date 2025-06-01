@@ -1,9 +1,22 @@
 import axios from "./axiosInstance";
-import { Colonia } from "../types";
+
+export type Colonia = {
+  id: string;
+  name: string;
+  ubication: string;
+  zone: string;
+  size: number;
+};
 
 export async function getColonias(): Promise<Colonia[]> {
-  const response = await axios.get("/colonias/");
-  return response.data; // Ajustar con el back
+  const response = await axios.get(`/colonies/colonies`);
+  return response.data;
+}
+
+// getColoniasById
+export async function getColoniasById(id: string): Promise<Colonia> {
+  const response = await axios.get(`/colonies/colonies/${id}/`);
+  return response.data;
 }
 
 export async function getColonies() {
