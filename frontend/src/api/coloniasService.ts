@@ -115,3 +115,18 @@ export async function createAvailability(
   const response = await axios.post("/users/availability/", data);
   return response.data;
 }
+
+export type Volunter = {
+  volunteer_id: number;
+  volunteer_name: string;
+  volunteer_email: string;
+  day: string;
+};
+export async function getAvailableVolunteersByZone(
+  zoneId: number
+): Promise<Volunter[]> {
+  const response = await axios.get(
+    `/colonies/zones/${zoneId}/available-volunteers/`
+  );
+  return response.data;
+}

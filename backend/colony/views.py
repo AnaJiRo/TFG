@@ -1,3 +1,10 @@
+from rest_framework.views import APIView
+from users.models import Availability, CustomUser
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Zone
+
+
 from users.models import Availability
 
 # Endpoint para asignaciones disponibles
@@ -297,3 +304,26 @@ class AssignmentBulkUpdateView(APIView):
                     )  
 
         return Response({"message": "Asignaciones actualizadas correctamente."}, status=status.HTTP_200_OK)
+
+class AvailableVolunteersByZoneView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, zone_id):
+        # Voluntarios con disponibilidad en la zona
+        availabilities = Availability.objects.filter(zone_id=zone_id)
+
+        # Voluntarios ya asignados a alguna colonia en esa zona
+        assigned_volunteers = CustomUser.objects.filter(
+            assignments__colony__zone_id=zone_id
+        ).values_list("id", flat=True).distinct()
+
+        data = []
+        for av in availabilities:
+            if av.user_id not in assigned_volunteers:
+                data.append({
+                    "id": av.user.id,
+                    "name": getattr(av.user, "name", av.user.username),
+                    "email": av.user.email,
+                    "day": av.day
+                })
+        return Response(data)
