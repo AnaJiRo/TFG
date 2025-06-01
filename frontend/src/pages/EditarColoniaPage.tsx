@@ -10,6 +10,7 @@ import {
   getColoniasById,
   updateColonia,
 } from "../api/coloniasService";
+import SelectInputBox from "../components/SelectInput/SelectInputBox";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
@@ -19,6 +20,7 @@ export default function EditarColoniaPage() {
   const [zona, setZona] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [localicy, setLocality] = useState("");
+  const [zonasDisponibles, setZonasDisponibles] = useState<string[]>([]);
 
   const fetchColonyDetails = async () => {
     if (!id) {
@@ -35,6 +37,8 @@ export default function EditarColoniaPage() {
       const zones = await getAllZones({
         name: zona,
       });
+      setZonasDisponibles(zones.map((z) => z.name));
+
       if (zones.length > 0) {
         setLocality(zones[0].locality);
       } else {
@@ -88,8 +92,6 @@ export default function EditarColoniaPage() {
     updateColony();
     if (errorMessage) return setError(errorMessage);
     setError(null);
-
-    // navigate("/colonias");
   };
 
   // Explicación: validamos que al menos un día tenga una asignación
@@ -121,11 +123,12 @@ export default function EditarColoniaPage() {
               value={ubicacion}
               onChange={(e) => setUbicacion(e.target.value)}
             />
-            <Input
+            <SelectInputBox
               label="Zona"
-              type="text"
               value={zona}
-              onChange={(e) => setZona(e.target.value)}
+              options={zonasDisponibles} // debes cargarlo previamente con `getAllZones`
+              onChange={(newZona) => setZona(newZona)}
+              placeholder="Escribe o selecciona una zona"
             />
           </div>
         </div>
