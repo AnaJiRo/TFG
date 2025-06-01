@@ -4,7 +4,7 @@ export type Colonia = {
   id: string;
   name: string;
   ubication: string;
-  zone: string;
+  zone: string | number;
   size?: number;
 };
 
@@ -62,6 +62,12 @@ export async function availableVolunteersByColony(id: string) {
   const response = await axios.get(
     `/colonies/colonies/${id}/available-assignments/`
   );
+  return response.data;
+}
+
+// create colony
+export async function createColony(data: Omit<Colonia, "id">) {
+  const response = await axios.post("/colonies/colonies/", data);
   return response.data;
 }
 

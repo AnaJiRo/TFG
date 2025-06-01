@@ -3,10 +3,9 @@ import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
 import { useNavigate } from "react-router-dom";
-import { validateColoniaData } from "../utils/validators";
-import SelectBox from "../components/SelectBox/SelectBox";
+
 import SelectInputBox from "../components/SelectInput/SelectInputBox";
-import { getAllZones, Zone } from "../api/coloniasService";
+import { createColony, createZone, getAllZones } from "../api/coloniasService";
 
 const diasSemana = ["L", "M", "X", "J", "V", "S", "D"];
 
@@ -15,30 +14,18 @@ type Voluntario = {
   dias: string[]; // ['L', 'X', 'V']
 };
 
-const dummyVoluntarios: Record<string, Voluntario[]> = {
-  "La Nana": [
-    { nombre: "Laura P.", dias: ["L", "X"] },
-    { nombre: "Eva M.", dias: ["J", "D"] },
-  ],
-  Centro: [
-    { nombre: "Antonio G.", dias: ["L", "M", "X", "J"] },
-    { nombre: "Pedro A.", dias: ["V", "S", "D"] },
-  ],
-};
-
 export default function NuevaColoniaPage() {
   const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
-  const [zona, setZona] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<
     Voluntario[]
   >([]);
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
-  const [zones, setZones] = useState<string[]>([]);
+  const [zonesName, setZonesName] = useState<string[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>("");
 
   const [asignacionPorDia, setAsignacionPorDia] = useState<
@@ -54,7 +41,7 @@ export default function NuevaColoniaPage() {
         locality: selectedLocalidad,
       });
 
-      setZones(zonesByLocality.map((zone) => zone.name));
+      setZonesName(zonesByLocality.map((zone) => zone.name));
 
       console.log("Zonas disponibles:", zones);
     } catch (error) {
@@ -62,33 +49,61 @@ export default function NuevaColoniaPage() {
     }
   };
 
-  console.log(zones);
+  console.log(zonesName);
 
   const handleSubmit = async () => {
-    const errorMessage = validateColoniaData({
-      nombre,
-      ubicacion,
-      zona,
-      asignacionPorDia,
+    // const errorMessage = validateColoniaData({
+    //   nombre,
+    //   ubicacion,
+    //   zona,
+    //   asignacionPorDia,
+    // });
+
+    const zoneExists = await getAllZones({
+      locality: selectedLocalidad,
+      name: selectedZone,
     });
 
-    if (errorMessage) {
-      setError(errorMessage);
+    console.log("Zona existente:", zoneExists);
+
+    let zoneCreated = null;
+    if (!zoneExists || zoneExists.length === 0) {
+      console.log("Zona no existe, creando nueva zona");
+      await createZone({
+        name: selectedZone,
+        locality: selectedLocalidad,
+      });
+      zoneCreated = await getAllZones({
+        locality: selectedLocalidad,
+        name: selectedZone,
+      });
+    }
+
+    if (!zoneCreated && !zoneExists) {
+      setError("No se pudo crear o encontrar la zona seleccionada");
       return;
     }
 
+    await createColony({
+      name: nombre,
+      ubication: ubicacion,
+      zone: zoneCreated?.length ? zoneCreated[0].id : zoneExists[0]?.id,
+      size: 3,
+    });
+
+    // if (errorMessage) {
+    //   setError(errorMessage);
+    //   return;
+    // }
+
     setError(null);
 
-    // TODO: Enviar los datos al backend mediante POST
-    console.log({ nombre, ubicacion, zona, asignacionPorDia });
-
-    navigate("/colonias");
+    // navigate("/colonias");
   };
 
   const isValid =
     nombre &&
     ubicacion &&
-    zona &&
     Object.values(asignacionPorDia).some((v) => v !== null);
 
   useEffect(() => {
@@ -138,7 +153,7 @@ export default function NuevaColoniaPage() {
               label="Zona"
               value={selectedZone}
               onChange={(value) => setSelectedZone(value)}
-              options={zones}
+              options={zonesName}
             />
           </div>
 
@@ -193,7 +208,7 @@ export default function NuevaColoniaPage() {
             label="Guardar colonia"
             variant="tertiary"
             onClick={handleSubmit}
-            disabled={!isValid}
+            // disabled={!isValid}
           />
         </div>
 
