@@ -81,8 +81,18 @@ export type Zone = {
   name: string;
   locality: string;
 };
-export async function getAllZones(): Promise<Zone[]> {
-  const response = await axios.get("/colonies/zones/");
+
+export async function getAllZones(params?: {
+  locality?: string;
+  name?: string;
+}): Promise<Zone[]> {
+  const response = await axios.get("/colonies/zones/", { params });
+  return response.data;
+}
+
+// createZone
+export async function createZone(data: Omit<Zone, "id">): Promise<Zone> {
+  const response = await axios.post("/colonies/zones/", data);
   return response.data;
 }
 

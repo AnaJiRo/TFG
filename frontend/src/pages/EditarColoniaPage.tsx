@@ -2,24 +2,23 @@ import { useEffect, useState } from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { validateColoniaData } from "../utils/validators";
 import {
-  Colonia,
+  createZone,
+  getAllZones,
   getColoniasById,
   updateColonia,
 } from "../api/coloniasService";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
-  const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [zona, setZona] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  const [colonia, setColonia] = useState<Colonia | null>(null);
+  const [localicy, setLocality] = useState("");
 
   const fetchColonyDetails = async () => {
     if (!id) {
@@ -29,10 +28,18 @@ export default function EditarColoniaPage() {
     try {
       const colony = await getColoniasById(id);
 
-      setColonia(colony);
       setNombre(colony.name);
       setUbicacion(colony.ubication);
       setZona(colony.zone);
+
+      const zones = await getAllZones({
+        name: zona,
+      });
+      if (zones.length > 0) {
+        setLocality(zones[0].locality);
+      } else {
+        setError("No se encontraron zonas para la colonia");
+      }
     } catch (error) {
       console.error(error);
       setError("No se pudieron cargar las colonias");
@@ -45,13 +52,23 @@ export default function EditarColoniaPage() {
       return;
     }
     try {
+      const zoneByNameAndLocality = await getAllZones({
+        name: zona,
+        locality: localicy,
+      });
+
+      if (zoneByNameAndLocality.length === 0) {
+        await createZone({
+          name: zona,
+          locality: localicy,
+        });
+      }
+
       await updateColonia(id, {
         name: nombre,
         ubication: ubicacion,
         zone: zona,
       });
-
-      // navigate("/colonias");
     } catch (error) {
       console.error(error);
       setError("No se pudo crear la colonia");

@@ -23,8 +23,11 @@ class ZoneListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Zone.objects.all()
         locality = self.request.query_params.get("locality")
+        name = self.request.query_params.get("name")
         if locality:
             queryset = queryset.filter(locality__iexact=locality)
+        if name:
+            queryset = queryset.filter(name__iexact=name)
         return queryset
 
 
