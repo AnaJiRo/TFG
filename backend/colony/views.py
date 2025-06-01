@@ -97,16 +97,31 @@ class AssignmentSummaryView(generics.GenericAPIView):
             from .models import Colony
 
             colonies = Colony.objects.all()
+
             for colony in colonies:
+                # Cargar todas las asignaciones de esta colonia
                 assignments = Assignment.objects.filter(colony=colony)
+
+                # Obtener voluntarios con disponibilidad en la zona de esta colonia
+                volunteers_con_disponibilidad = set(
+                    Availability.objects.filter(zone=colony.zone).values_list("user_id", flat=True)
+                )
+
+                # Inicializar resumen
                 summary = {day: None for day in days}
+
                 for assignment in assignments:
-                    summary[assignment.day] = (
-                        assignment.volunteer.name if assignment.volunteer else None
-                    )
+                    # Solo asignamos si el voluntario tiene disponibilidad en la zona de la colonia
+                    if assignment.volunteer_id in volunteers_con_disponibilidad:
+                        summary[assignment.day] = (
+                            assignment.volunteer.name if assignment.volunteer else None
+                        )
+
+                # Calcular voluntarios disponibles por día
                 assigned_users = Assignment.objects.filter(colony=colony).values_list(
                     "volunteer_id", "day"
                 )
+
                 availability_by_day = {}
                 for day in days:
                     availability = (
@@ -117,6 +132,8 @@ class AssignmentSummaryView(generics.GenericAPIView):
                         .count()
                     )
                     availability_by_day[day] = availability
+
+                # Agregar al resultado
                 result.append(
                     {
                         "id": colony.id,
@@ -126,7 +143,9 @@ class AssignmentSummaryView(generics.GenericAPIView):
                         "zona": colony.zone.name if colony.zone else None,
                     }
                 )
+
             return Response(result)
+
 
         # Si es voluntario, ve todas las colonias donde está asignado y los días que tiene asignados (sin voluntarios_disponibles)
         else:
