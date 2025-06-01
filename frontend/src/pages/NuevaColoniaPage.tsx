@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
 import { useNavigate } from "react-router-dom";
 import { validateColoniaData } from "../utils/validators";
 import SelectBox from "../components/SelectBox/SelectBox";
+import SelectInputBox from "../components/SelectInput/SelectInputBox";
+import { getAllZones, Zone } from "../api/coloniasService";
 
 const diasSemana = ["L", "M", "X", "J", "V", "S", "D"];
 
@@ -25,19 +27,42 @@ const dummyVoluntarios: Record<string, Voluntario[]> = {
 };
 
 export default function NuevaColoniaPage() {
+  const navigate = useNavigate();
+
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
-  const [zona, setZona] = useState("");
+  const [zona, setZona] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<
     Voluntario[]
   >([]);
+  const [localidades, setLocalidades] = useState<string[]>([]);
+  const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
+  const [zones, setZones] = useState<string[]>([]);
+  const [selectedZone, setSelectedZone] = useState<string>("");
 
   const [asignacionPorDia, setAsignacionPorDia] = useState<
     Record<string, string | null>
   >(diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {}));
 
-  const navigate = useNavigate();
+  const getZones = async () => {
+    try {
+      const zones = await getAllZones();
+      setLocalidades([...new Set(zones.map((zone) => zone.locality))]);
+
+      const zonesByLocality = await getAllZones({
+        locality: selectedLocalidad,
+      });
+
+      setZones(zonesByLocality.map((zone) => zone.name));
+
+      console.log("Zonas disponibles:", zones);
+    } catch (error) {
+      console.error("Error al obtener zonas:", error);
+    }
+  };
+
+  console.log(zones);
 
   const handleSubmit = async () => {
     const errorMessage = validateColoniaData({
@@ -57,7 +82,7 @@ export default function NuevaColoniaPage() {
     // TODO: Enviar los datos al backend mediante POST
     console.log({ nombre, ubicacion, zona, asignacionPorDia });
 
-    navigate("/colonias"); // redirige al dashboard de colonias
+    navigate("/colonias");
   };
 
   const isValid =
@@ -65,6 +90,10 @@ export default function NuevaColoniaPage() {
     ubicacion &&
     zona &&
     Object.values(asignacionPorDia).some((v) => v !== null);
+
+  useEffect(() => {
+    getZones();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4">
@@ -90,14 +119,11 @@ export default function NuevaColoniaPage() {
               onChange={(e) => setNombre(e.target.value)}
             />
 
-            <SelectBox
+            <SelectInputBox
               label="Localidad"
-              placeholder="Selecciona una localidad"
-              value={"localidad"}
-              onChange={() => {}}
-              options={
-                ["La Nana", "Centro", "Norte", "Oeste"] // Aquí deberías cargar las localidades disponibles
-              }
+              value={selectedLocalidad}
+              onChange={(value) => setSelectedLocalidad(value)}
+              options={localidades}
             />
 
             <Input
@@ -108,23 +134,11 @@ export default function NuevaColoniaPage() {
               onChange={(e) => setUbicacion(e.target.value)}
             />
 
-            <Input
+            <SelectInputBox
               label="Zona"
-              type="text"
-              placeholder="Ej: La Nana"
-              value={zona}
-              onChange={(e) => {
-                const nuevaZona = e.target.value;
-                setZona(nuevaZona);
-
-                const voluntariosZona = dummyVoluntarios[nuevaZona] || [];
-                setVoluntariosDisponibles(voluntariosZona);
-
-                // Reiniciar asignación
-                setAsignacionPorDia(
-                  diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
-                );
-              }}
+              value={selectedZone}
+              onChange={(value) => setSelectedZone(value)}
+              options={zones}
             />
           </div>
 
