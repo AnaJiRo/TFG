@@ -2,7 +2,7 @@ import React from 'react';
 
 type InputProps = {
   label: string;            // Etiqueta visible sobre el input
-  name: string;               
+  name?: string;               
   placeholder?: string;         // Texto que se muestra dentro del input
   type?: 'text' | 'email' | 'password'; // Tipo de campo
   value?: string;               // Valor controlado del input

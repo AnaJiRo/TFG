@@ -7,7 +7,10 @@ import Input  from '../components/Input/Input';
 
 interface User {
   id: number;
+  username: string;
   name: string;
+  lastname: string;
+  email: string;
   location: string;
   zone: string;
   phone: string;
@@ -23,9 +26,9 @@ export default function UserManagementPage() {
     // Aquí deberías hacer la llamada al backend para obtener los usuarios
     // Por ahora usaremos datos de ejemplo
     setUsers([
-      { id: 1, name: 'Laura Sánchez', location: 'Sevilla', zone: 'Centro', phone: '600111222', role: 'voluntary' },
-      { id: 2, name: 'Carmen Pérez', location: 'Dos Hermanas', zone: 'Norte', phone: '655888999', role: 'voluntary' },
-      { id: 3, name: 'Admin Maite', location: 'Sevilla', zone: 'Todos', phone: '644555666', role: 'admin' },
+      { id: 1, username: 'lau_32', name: 'Laura',lastname:'Sánchez', email:'laura@example.com', location: 'Sevilla', zone: 'Centro', phone: '600111222', role: 'voluntary' },
+      { id: 2, username: 'Carmen_32', name: 'Carmen', lastname:'Pérez', email:'carmen@example.com', location: 'Dos Hermanas', zone: 'Norte', phone: '655888999', role: 'voluntary' },
+      { id: 3, username: 'Mai_32', name: 'Admin Maite',lastname:'Garcia', email:'Mai.Admin@example.com', location: 'Sevilla', zone: 'Todos', phone: '644555666', role: 'admin' },
     ]);
   }, []);
 
@@ -36,7 +39,7 @@ export default function UserManagementPage() {
 
   //No se si la ruta esta bien
   const editUser = (id: number) => {
-    navigate(`userManagement/${id}editar`);
+    navigate(`/admin/users/${id}/edit`);
   };
 
 
@@ -55,34 +58,29 @@ export default function UserManagementPage() {
         <img src="/assets/icons/user-management.svg" alt="Gestion usuarios" className="w-14 h-14" />
         Gestion de usuarios
       </h1>
-      <div className="mb-4 flex justify-between items-center ">
-        <div className="max-w-sm w-full">
-          <Input
-            label="Search"
-            name=''
-            placeholder="Search user by name..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-        <Button label="+ Add Volunteer" onClick={() => console.log('Añadir usuario')} variant="tertiary" />
-      </div>
+      
 
       <table className="w-full bg-white rounded-xl shadow-md p-6 text-purple-900">
         <thead className="bg-purple-200">
           <tr>
-            <th className="p-3 text-left">Name</th>
-            <th className="p-3 text-left">Location</th>
-            <th className="p-3 text-left">Zone</th>
-            <th className="p-3 text-left">Phone</th>
-            <th className="p-3 text-left">Role</th>
-            <th className="p-3 text-left">Actions</th>
+            <th className="p-3 text-left">Nombre Usuario</th>
+            <th className="p-3 text-left">Nombre</th>
+            <th className="p-3 text-left">Apellido</th>
+            <th className="p-3 text-left">Email</th>
+            <th className="p-3 text-left">Localidad</th>
+            <th className="p-3 text-left">Zona</th>
+            <th className="p-3 text-left">Telefono</th>
+            <th className="p-3 text-left">Rol</th>
+            <th className="p-3 text-left">Opciones</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map(user => (
             <tr key={user.id} className="border-t">
+              <td className="p-3">{user.username}</td>
               <td className="p-3">{user.name}</td>
+              <td className="p-3">{user.lastname}</td>
+              <td className="p-3">{user.email}</td>
               <td className="p-3">{user.location}</td>
               <td className="p-3">{user.zone}</td>
               <td className="p-3">{user.phone}</td>

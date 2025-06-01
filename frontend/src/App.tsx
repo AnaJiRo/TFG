@@ -22,8 +22,8 @@ function App() {
         <Route path="/colonias/nueva" element={<NuevaColoniaPage />} />
         <Route path="/colonias/:id" element={<DetalleColoniaPage />} />
         <Route path="/colonias/:id/editar" element={<EditarColoniaPage />} />
-        <Route path="/userManagement" element={<UserManagementPage />} />
-        <Route path="/userManagement/:id/editar" element={<EditUserPage />} />
+        <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route path="/admin/users/:id/edit" element={<EditUserPage />} />
       </Route>
 
       {/* Rutas sin navbar */}
