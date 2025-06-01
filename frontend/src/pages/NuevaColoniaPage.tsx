@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import Input from '../components/Input/Input';
-import Button from '../components/Button/Button';
-import FormContainer from '../components/FormContainer';
-import { useNavigate } from 'react-router-dom';
-import { validateColoniaData } from '../utils/validators';
+import { useState } from "react";
+import Input from "../components/Input/Input";
+import Button from "../components/Button/Button";
+import FormContainer from "../components/FormContainer";
+import { useNavigate } from "react-router-dom";
+import { validateColoniaData } from "../utils/validators";
+import SelectBox from "../components/SelectBox/SelectBox";
 
-const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const diasSemana = ["L", "M", "X", "J", "V", "S", "D"];
 
 type Voluntario = {
   nombre: string;
@@ -13,32 +14,38 @@ type Voluntario = {
 };
 
 const dummyVoluntarios: Record<string, Voluntario[]> = {
-  'La Nana': [
-    { nombre: 'Laura P.', dias: ['L', 'X'] },
-    { nombre: 'Eva M.', dias: ['J', 'D'] },
+  "La Nana": [
+    { nombre: "Laura P.", dias: ["L", "X"] },
+    { nombre: "Eva M.", dias: ["J", "D"] },
   ],
-  'Centro': [
-    { nombre: 'Antonio G.', dias: ['L', 'M', 'X', 'J'] },
-    { nombre: 'Pedro A.', dias: ['V', 'S', 'D'] },
+  Centro: [
+    { nombre: "Antonio G.", dias: ["L", "M", "X", "J"] },
+    { nombre: "Pedro A.", dias: ["V", "S", "D"] },
   ],
 };
 
 export default function NuevaColoniaPage() {
-  const [nombre, setNombre] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
-  const [zona, setZona] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
+  const [zona, setZona] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<Voluntario[]>([]);
+  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<
+    Voluntario[]
+  >([]);
 
-  const [asignacionPorDia, setAsignacionPorDia] = useState<Record<string, string | null>>(
-    diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
-  );
+  const [asignacionPorDia, setAsignacionPorDia] = useState<
+    Record<string, string | null>
+  >(diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {}));
 
   const navigate = useNavigate();
 
-  
   const handleSubmit = async () => {
-    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, asignacionPorDia,});
+    const errorMessage = validateColoniaData({
+      nombre,
+      ubicacion,
+      zona,
+      asignacionPorDia,
+    });
 
     if (errorMessage) {
       setError(errorMessage);
@@ -50,18 +57,22 @@ export default function NuevaColoniaPage() {
     // TODO: Enviar los datos al backend mediante POST
     console.log({ nombre, ubicacion, zona, asignacionPorDia });
 
-    navigate('/colonias'); // redirige al dashboard de colonias
+    navigate("/colonias"); // redirige al dashboard de colonias
   };
 
-  const isValid = nombre && ubicacion && zona && Object.values(asignacionPorDia).some(v => v !== null);
+  const isValid =
+    nombre &&
+    ubicacion &&
+    zona &&
+    Object.values(asignacionPorDia).some((v) => v !== null);
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4">
       <FormContainer maxWidth="max-w-4xl" className="relative">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white font-poppins">Nueva Colonia</h1>
+          <h1 className="text-3xl font-bold text-white font-poppins">
+            Nueva Colonia
+          </h1>
           <p className="text-white/90 mt-1 font-nunito">
             Completa para registrar una nueva colonia
           </p>
@@ -69,7 +80,6 @@ export default function NuevaColoniaPage() {
 
         {/* Layout en dos columnas */}
         <div className="flex flex-col md:flex-row gap-8 w-full">
-          
           {/* Columna izquierda: info general */}
           <div className="flex-1 space-y-4">
             <Input
@@ -78,6 +88,16 @@ export default function NuevaColoniaPage() {
               placeholder="Ej: Colonia Eleven"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
+            />
+
+            <SelectBox
+              label="Localidad"
+              placeholder="Selecciona una localidad"
+              value={"localidad"}
+              onChange={() => {}}
+              options={
+                ["La Nana", "Centro", "Norte", "Oeste"] // Aquí deberías cargar las localidades disponibles
+              }
             />
 
             <Input
@@ -110,10 +130,14 @@ export default function NuevaColoniaPage() {
 
           {/* Columna derecha: asignación por día */}
           <div className="flex-1 space-y-3">
-            <h2 className="text-white font-semibold mb-2">Asignar voluntarios por día</h2>
+            <h2 className="text-white font-semibold mb-2">
+              Asignar voluntarios por día
+            </h2>
 
             {diasSemana.map((dia) => {
-              const disponiblesDia = voluntariosDisponibles.filter((v) => v.dias.includes(dia));
+              const disponiblesDia = voluntariosDisponibles.filter((v) =>
+                v.dias.includes(dia)
+              );
 
               return (
                 <div key={dia} className="flex items-center gap-4">
@@ -121,7 +145,7 @@ export default function NuevaColoniaPage() {
 
                   {disponiblesDia.length > 0 ? (
                     <select
-                      value={asignacionPorDia[dia] || ''}
+                      value={asignacionPorDia[dia] || ""}
                       onChange={(e) =>
                         setAsignacionPorDia((prev) => ({
                           ...prev,
@@ -139,7 +163,9 @@ export default function NuevaColoniaPage() {
                       ))}
                     </select>
                   ) : (
-                    <span className="text-white/70 text-sm">Aún no hay voluntarios</span>
+                    <span className="text-white/70 text-sm">
+                      Aún no hay voluntarios
+                    </span>
                   )}
                 </div>
               );
@@ -165,9 +191,10 @@ export default function NuevaColoniaPage() {
         />
 
         {/* Error */}
-        {error && <p className="text-sm text-red-400 mt-2 text-center">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-400 mt-2 text-center">{error}</p>
+        )}
       </FormContainer>
-
     </div>
   );
 }
