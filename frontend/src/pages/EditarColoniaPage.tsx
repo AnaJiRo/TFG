@@ -4,7 +4,11 @@ import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import { validateColoniaData } from "../utils/validators";
-import { Colonia, getColoniasById } from "../api/coloniasService";
+import {
+  Colonia,
+  getColoniasById,
+  updateColonia,
+} from "../api/coloniasService";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
@@ -35,6 +39,25 @@ export default function EditarColoniaPage() {
     }
   };
 
+  const updateColony = async () => {
+    if (!id) {
+      setError("ID de colonia no especificado");
+      return;
+    }
+    try {
+      await updateColonia(id, {
+        name: nombre,
+        ubication: ubicacion,
+        zone: zona,
+      });
+
+      // navigate("/colonias");
+    } catch (error) {
+      console.error(error);
+      setError("No se pudo crear la colonia");
+    }
+  };
+
   useEffect(() => {
     fetchColonyDetails();
   }, []);
@@ -45,10 +68,11 @@ export default function EditarColoniaPage() {
       ubicacion,
       zona,
     });
+    updateColony();
     if (errorMessage) return setError(errorMessage);
     setError(null);
 
-    navigate("/colonias");
+    // navigate("/colonias");
   };
 
   // Explicación: validamos que al menos un día tenga una asignación

@@ -16,7 +16,7 @@ class ZoneSerializer(serializers.ModelSerializer):
 
 class ColonySerializer(serializers.ModelSerializer):
     zone = serializers.SlugRelatedField(slug_field="name", queryset=Zone.objects.all())
-
+    size = serializers.IntegerField(required=False, allow_null=True)
     class Meta:
         model = Colony
         fields = "__all__"

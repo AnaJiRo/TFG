@@ -5,7 +5,7 @@ export type Colonia = {
   name: string;
   ubication: string;
   zone: string;
-  size: number;
+  size?: number;
 };
 
 export async function getColonias(): Promise<Colonia[]> {
@@ -16,6 +16,23 @@ export async function getColonias(): Promise<Colonia[]> {
 // getColoniasById
 export async function getColoniasById(id: string): Promise<Colonia> {
   const response = await axios.get(`/colonies/colonies/${id}/`);
+  return response.data;
+}
+
+//  createColonia
+export async function createColonia(
+  data: Omit<Colonia, "id">
+): Promise<Colonia> {
+  const response = await axios.post("/colonies/colonies/", data);
+  return response.data;
+}
+
+// updateColonia
+export async function updateColonia(
+  id: string,
+  data: Omit<Colonia, "id">
+): Promise<Colonia> {
+  const response = await axios.put(`/colonies/colonies/${id}/`, data);
   return response.data;
 }
 
