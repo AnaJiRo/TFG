@@ -1,13 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, AvailabilitySerializer
+from .serializers import CustomTokenObtainPairSerializer, UserSerializer, AvailabilitySerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdmin, IsAdminOrSelf
 from rest_framework.response import Response    
 from rest_framework import status
 from .serializers import PromoteByEmailSerializer
 from .models import Availability
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class MyAvailabilityListCreateView(generics.ListCreateAPIView):
@@ -93,3 +94,8 @@ class PromoteByEmailView(APIView):
             return Response({'detail': f'{user.username} ahora es administrador.'}, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

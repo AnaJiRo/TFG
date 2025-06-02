@@ -1,4 +1,4 @@
-import axios from './axiosInstance';
+import axios from "./axiosInstance";
 
 type LoginPayload = {
   email: string;
@@ -6,19 +6,21 @@ type LoginPayload = {
 };
 
 export async function loginUser(data: LoginPayload) {
-  const response = await axios.post('/users/token/', data);
+  const response = await axios.post("/users/token/", data);
   return response.data;
 }
 
 type RegisterPayload = {
+  username: string;
   name: string;
   lastname: string;
   email: string;
   password: string;
+  phone: string;
 };
 
 export async function registerUser(data: RegisterPayload) {
-  const response = await axios.post('/register/', data); // ajusta la ruta según tu backend
+  const response = await axios.post("/users/register/", data); // ajusta la ruta según tu backend
   return response.data;
 }
 

@@ -1,34 +1,47 @@
-import { useState } from 'react';
-import Input from '../components/Input/Input';
-import Button from '../components/Button/Button';
-import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../api/authService';
+import { useState } from "react";
+import Input from "../components/Input/Input";
+import Button from "../components/Button/Button";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../api/authService";
 
 export default function RegisterPage() {
-  const [name, setName] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
-      const response = await registerUser({ name, lastname, email, password });
+      await registerUser({
+        username: username,
+        name,
+        lastname,
+        email,
+        password,
+        phone,
+      });
+
+      const loginResponse = await loginUser({
+        email,
+        password,
+      });
 
       // Si el backend devuelve tokens:
-      localStorage.setItem('access_token', response.access);
-      localStorage.setItem('refresh_token', response.refresh);
+      localStorage.setItem("access_token", loginResponse.access);
+      localStorage.setItem("refresh_token", loginResponse.refresh);
 
       // Redirige tras registrarse a la vista de completar perfil
-      navigate('/completar-perfil');
+      navigate("/completar-perfil");
     } catch (err) {
-      console.error('Error de registro:', err);
-      setError('Hubo un error al registrarse');
+      console.error("Error de registro:", err);
+      setError("Hubo un error al registrarse");
     }
-    
-};
+  };
 
   return (
     <div
@@ -36,13 +49,26 @@ export default function RegisterPage() {
       style={{ backgroundImage: "url('/assets/login/Fondo_solo.png')" }}
     >
       <div className="w-full max-w-xs bg-fuchsia-300/80 backdrop-blur-md px-6 py-4 rounded-2xl shadow-lg flex flex-col items-center gap-6">
-      <div className="flex items-center gap-3">
-            <img src="/assets/login/pawprint-cat.svg" alt="Huellas de Gato" className="w-8 h-8" />
-            <h1 className="text-2xl font-bold text-white font-poppins">Registrarse</h1>
-     </div>
+        <div className="flex items-center gap-3">
+          <img
+            src="/assets/login/pawprint-cat.svg"
+            alt="Huellas de Gato"
+            className="w-8 h-8"
+          />
+          <h1 className="text-2xl font-bold text-white font-poppins">
+            Registrarse
+          </h1>
+        </div>
 
         {/* Campos */}
         <div className="w-full flex flex-col gap-4">
+          <Input
+            label="Nombre de usuario"
+            type="text"
+            placeholder="Tu usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
           <Input
             label="Nombre"
             type="text"
@@ -56,6 +82,14 @@ export default function RegisterPage() {
             placeholder="Tus apellidos"
             value={lastname}
             onChange={(e) => setLastname(e.target.value)}
+          />
+          {/* Teléfono */}
+          <Input
+            label="Teléfono"
+            type="text"
+            placeholder="Ej: 600123456"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
           />
           <Input
             label="Correo electrónico"
@@ -75,7 +109,11 @@ export default function RegisterPage() {
 
         {/* Botón */}
         <div className="w-full flex justify-center">
-          <Button label="Registrarse" variant="tertiary" onClick={handleSubmit} />
+          <Button
+            label="Registrarse"
+            variant="tertiary"
+            onClick={handleSubmit}
+          />
         </div>
 
         {/* Error */}
@@ -83,8 +121,11 @@ export default function RegisterPage() {
 
         {/* Enlace a login */}
         <p className="text-sm text-white/80 font-nunito text-center">
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-white underline hover:text-purple-700">
+          ¿Ya tienes cuenta?{" "}
+          <Link
+            to="/login"
+            className="text-white underline hover:text-purple-700"
+          >
             Inicia sesión
           </Link>
         </p>
