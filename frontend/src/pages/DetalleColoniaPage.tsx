@@ -164,4 +164,4 @@ const dummyColonia: Colonia = {
         </FormContainer>
         </div>
     );
-    }
+}

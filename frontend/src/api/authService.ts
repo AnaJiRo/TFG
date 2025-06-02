@@ -21,3 +21,8 @@ export async function registerUser(data: RegisterPayload) {
   const response = await axios.post('/register/', data); // ajusta la ruta según tu backend
   return response.data;
 }
+
+export async function getUsers() {
+  const response = await axios.get('/users/');
+  return response.data
+}

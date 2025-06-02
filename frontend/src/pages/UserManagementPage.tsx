@@ -1,8 +1,7 @@
 // src/pages/UserManagementPage.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button  from '../components/Button/Button';
-import Input  from '../components/Input/Input';
+import { getUsers } from '../api/authService';
 
 
 interface User {
@@ -25,6 +24,7 @@ export default function UserManagementPage() {
   useEffect(() => {
     // Aquí deberías hacer la llamada al backend para obtener los usuarios
     // Por ahora usaremos datos de ejemplo
+    getUsers()
     setUsers([
       { id: 1, username: 'lau_32', name: 'Laura',lastname:'Sánchez', email:'laura@example.com', location: 'Sevilla', zone: 'Centro', phone: '600111222', role: 'voluntary' },
       { id: 2, username: 'Carmen_32', name: 'Carmen', lastname:'Pérez', email:'carmen@example.com', location: 'Dos Hermanas', zone: 'Norte', phone: '655888999', role: 'voluntary' },

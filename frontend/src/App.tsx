@@ -12,6 +12,8 @@ import DetalleColoniaPage from './pages/DetalleColoniaPage';
 import EditarColoniaPage from './pages/EditarColoniaPage';
 import UserManagementPage from './pages/UserManagementPage';
 import EditUserPage from './pages/EditUserPage';
+import UserProfilePage from './pages/UserProfilePage'
+import EditProfilePage from './pages/EditProfilePage';
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
         <Route path="/colonias/:id/editar" element={<EditarColoniaPage />} />
         <Route path="/admin/users" element={<UserManagementPage />} />
         <Route path="/admin/users/:id/edit" element={<EditUserPage />} />
+        <Route path="/profile" element={<UserProfilePage />} />
+        <Route path="/profile/:id/edit" element={<EditProfilePage />} />
       </Route>
 
       {/* Rutas sin navbar */}
