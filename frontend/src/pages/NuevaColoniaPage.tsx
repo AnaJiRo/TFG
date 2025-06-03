@@ -10,17 +10,17 @@ import {
   createZone,
   getAllZones,
   createBulkAssignments,
-  availableVolunteersByColony,
   getAvailableVolunteersByZone,
+  Volunter,
 } from "../api/coloniasService";
 import { days, dayShortNames } from "../utils/constants";
 
-type VolunteerOption = {
-  volunteer_id: number;
-  volunteer_name: string;
-  volunteer_email: string;
-  day: string;
-};
+// type VolunteerOption = {
+//   id: number;
+//   name: string;
+//   email: string;
+//   day: string;
+// };
 
 export default function NuevaColoniaPage() {
   const navigate = useNavigate();
@@ -28,10 +28,10 @@ export default function NuevaColoniaPage() {
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [error, setError] = useState<string | null>(null);
-  // Agrupados por día: { monday: [voluntario, ...], ... }
-  const [availableVolunteers, setAvailableVolunteers] = useState<
-    Record<string, VolunteerOption[]>
-  >({});
+  // Lista plana de voluntarios disponibles para la zona
+  const [availableVolunteers, setAvailableVolunteers] = useState<Volunter[]>(
+    []
+  );
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
   const [zonesName, setZonesName] = useState<string[]>([]);
@@ -62,7 +62,7 @@ export default function NuevaColoniaPage() {
 
   // Buscar voluntarios disponibles para la zona seleccionada
   const fetchAvailableVolunteersForZone = async () => {
-    setAvailableVolunteers({});
+    setAvailableVolunteers([]);
     if (!selectedZone || !selectedLocalidad) return;
     try {
       // Buscar la zona para obtener su id
@@ -72,18 +72,11 @@ export default function NuevaColoniaPage() {
       });
       if (!zones.length) return;
       const zoneId = zones[0].id;
-      // Buscar voluntarios disponibles para esa zona
-      const volunteersList = await availableVolunteersByColony(zoneId);
-      const volunterr = await getAvailableVolunteersByZone(zoneId);
-      console.log("Voluntarios disponibles:", volunterr);
-      // Agrupar voluntarios por día
-      const agrupadoPorDia = days.reduce((acc, dia) => {
-        acc[dia] = volunteersList.filter((v: VolunteerOption) => v.day === dia);
-        return acc;
-      }, {} as Record<string, VolunteerOption[]>);
-      setAvailableVolunteers(agrupadoPorDia);
-    } catch (error) {
-      setAvailableVolunteers({});
+      // Usar solo el nuevo endpoint simplificado
+      const volunteersList = await getAvailableVolunteersByZone(zoneId);
+      setAvailableVolunteers(volunteersList);
+    } catch {
+      setAvailableVolunteers([]);
     }
   };
 
@@ -131,8 +124,6 @@ export default function NuevaColoniaPage() {
     // Navegar o mostrar éxito
     navigate("/colonias");
   };
-
-  // const isValid = nombre && ubicacion && Object.values(asignacionPorDia).some((v) => v !== null);
 
   // Actualizar zonas cuando cambia la localidad
   useEffect(() => {
@@ -199,11 +190,17 @@ export default function NuevaColoniaPage() {
             </h2>
 
             {days.map((dia) => {
-              const disponibles = availableVolunteers[dia] || [];
+              // Filtrar voluntarios por día
+              const disponibles = availableVolunteers.filter(
+                (v) => v.day === dia
+              );
+              console.log("disponibles:", disponibles);
               const options = disponibles.map((v) => ({
-                value: v.volunteer_id.toString(),
-                label: v.volunteer_name,
+                value: v.id?.toString(),
+                label: v.name,
               }));
+
+              console.log("options:", options);
               return (
                 <div
                   key={dayShortNames[dia]}

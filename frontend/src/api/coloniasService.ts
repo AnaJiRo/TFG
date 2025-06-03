@@ -117,9 +117,9 @@ export async function createAvailability(
 }
 
 export type Volunter = {
-  volunteer_id: number;
-  volunteer_name: string;
-  volunteer_email: string;
+  id: number;
+  name: string;
+  email: string;
   day: string;
 };
 export async function getAvailableVolunteersByZone(
