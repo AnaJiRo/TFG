@@ -24,7 +24,22 @@ export async function registerUser(data: RegisterPayload) {
   return response.data;
 }
 
-export async function getUsers() {
-  const response = await axios.get('/users/');
-  return response.data
+export type User = {
+  id: string;
+  username: string;
+  name: string;
+  lastname?: string;
+  email: string;
+  phone: string;
+  role: string;
+};
+
+export async function getUsers(): Promise<User[]> {
+  const response = await axios.get("/users/");
+  return response.data;
+}
+
+export async function getUserById(userId: string): Promise<User> {
+  const response = await axios.get(`/users/${userId}/`);
+  return response.data;
 }
