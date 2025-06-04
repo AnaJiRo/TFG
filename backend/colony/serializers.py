@@ -14,9 +14,29 @@ class ZoneSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ColonySerializer(serializers.ModelSerializer):
-    zone = serializers.SlugRelatedField(slug_field="name", queryset=Zone.objects.all())
+class FlexibleZoneField(serializers.Field):
+    def to_internal_value(self, data):
+        # Si es número → buscar por ID
+        if isinstance(data, int):
+            try:
+                return Zone.objects.get(pk=data)
+            except Zone.DoesNotExist:
+                raise serializers.ValidationError("Zona con ese ID no existe.")
+        # Si es string → buscar por nombre
+        elif isinstance(data, str):
+            try:
+                return Zone.objects.get(name=data)
+            except Zone.DoesNotExist:
+                raise serializers.ValidationError("Zona con ese nombre no existe.")
+        else:
+            raise serializers.ValidationError("Zona inválida. Debe ser un ID o un nombre.")
 
+    def to_representation(self, obj):
+        return obj.name  # lo que devuelve en el GET
+    
+class ColonySerializer(serializers.ModelSerializer):
+    zone = FlexibleZoneField()
+    size = serializers.IntegerField(required=False, allow_null=True)
     class Meta:
         model = Colony
         fields = "__all__"

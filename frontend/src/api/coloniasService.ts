@@ -1,9 +1,39 @@
 import axios from "./axiosInstance";
-import { Colonia } from "../types";
+
+export type Colonia = {
+  id: string;
+  name: string;
+  ubication: string;
+  zone: string | number;
+  size?: number;
+};
 
 export async function getColonias(): Promise<Colonia[]> {
-  const response = await axios.get("/colonias/");
-  return response.data; // Ajustar con el back
+  const response = await axios.get(`/colonies/colonies`);
+  return response.data;
+}
+
+// getColoniasById
+export async function getColoniasById(id: string): Promise<Colonia> {
+  const response = await axios.get(`/colonies/colonies/${id}/`);
+  return response.data;
+}
+
+//  createColonia
+export async function createColonia(
+  data: Omit<Colonia, "id">
+): Promise<Colonia> {
+  const response = await axios.post("/colonies/colonies/", data);
+  return response.data;
+}
+
+// updateColonia
+export async function updateColonia(
+  id: string,
+  data: Omit<Colonia, "id">
+): Promise<Colonia> {
+  const response = await axios.put(`/colonies/colonies/${id}/`, data);
+  return response.data;
 }
 
 export async function getColonies() {
@@ -35,6 +65,12 @@ export async function availableVolunteersByColony(id: string) {
   return response.data;
 }
 
+// create colony
+export async function createColony(data: Omit<Colonia, "id">) {
+  const response = await axios.post("/colonies/colonies/", data);
+  return response.data;
+}
+
 export async function createBulkAssignments(
   id: string,
   assignments: Record<string, number | null>
@@ -51,8 +87,18 @@ export type Zone = {
   name: string;
   locality: string;
 };
-export async function getAllZones(): Promise<Zone[]> {
-  const response = await axios.get("/colonies/zones/");
+
+export async function getAllZones(params?: {
+  locality?: string;
+  name?: string;
+}): Promise<Zone[]> {
+  const response = await axios.get("/colonies/zones/", { params });
+  return response.data;
+}
+
+// createZone
+export async function createZone(data: Omit<Zone, "id">): Promise<Zone> {
+  const response = await axios.post("/colonies/zones/", data);
   return response.data;
 }
 
@@ -67,5 +113,20 @@ export async function createAvailability(
   data: availability
 ): Promise<availability> {
   const response = await axios.post("/users/availability/", data);
+  return response.data;
+}
+
+export type Volunter = {
+  id: number;
+  name: string;
+  email: string;
+  day: string;
+};
+export async function getAvailableVolunteersByZone(
+  zoneId: number
+): Promise<Volunter[]> {
+  const response = await axios.get(
+    `/colonies/zones/${zoneId}/available-volunteers/`
+  );
   return response.data;
 }

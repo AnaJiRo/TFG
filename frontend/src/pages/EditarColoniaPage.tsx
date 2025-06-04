@@ -2,29 +2,26 @@ import { useEffect, useState } from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
-import Select from "../components/SelectBox/Select";
-import { useNavigate, useParams } from "react-router-dom";
-import { diasSemana } from "../utils/constants";
+import { useParams } from "react-router-dom";
 import { validateColoniaData } from "../utils/validators";
-import { getSummaryByColony } from "../api/coloniasService";
-import { ColoniaAsignacion } from "../types";
+import {
+  createZone,
+  getAllZones,
+  getColoniasById,
+  updateColonia,
+} from "../api/coloniasService";
+import SelectInputBox from "../components/SelectInput/SelectInputBox";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
-  const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [zona, setZona] = useState("");
-  const [asignacionPorDia, setAsignacionPorDia] = useState<
-    Record<string, string | null>
-  >({});
-  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<
-    Voluntario[]
-  >([]);
   const [error, setError] = useState<string | null>(null);
-
-  const [colonia, setColonia] = useState<ColoniaAsignacion | null>(null);
+  const [localicy, setLocality] = useState("");
+  const [zonasDisponibles, setZonasDisponibles] = useState<string[]>([]);
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
 
   const fetchColonyDetails = async () => {
     if (!id) {
@@ -32,15 +29,60 @@ export default function EditarColoniaPage() {
       return;
     }
     try {
-      const summaryColony = await getSummaryByColony(id);
+      const colony = await getColoniasById(id);
 
-      setColonia(summaryColony);
-      setNombre(summaryColony.colonia);
-      setUbicacion(summaryColony.ubicacion);
-      setZona(summaryColony.zona);
+      setNombre(colony.name);
+      setUbicacion(colony.ubication);
+      setZona(colony.zone);
+
+      const zones = await getAllZones({
+        name: zona,
+      });
+      setZonasDisponibles(zones.map((z) => z.name));
+
+      if (zones.length > 0) {
+        setLocality(zones[0].locality);
+      } else {
+        setError("No se encontraron zonas para la colonia");
+      }
     } catch (error) {
       console.error(error);
       setError("No se pudieron cargar las colonias");
+    }
+  };
+
+  const updateColony = async () => {
+    if (!id) {
+      setError("ID de colonia no especificado");
+      return;
+    }
+    try {
+      const zoneByNameAndLocality = await getAllZones({
+        name: zona,
+        locality: localicy,
+      });
+
+      if (zoneByNameAndLocality.length === 0) {
+        await createZone({
+          name: zona,
+          locality: localicy,
+        });
+      }
+
+      await updateColonia(id, {
+        name: nombre,
+        ubication: ubicacion,
+        zone: zona,
+      });
+
+      setMensajeExito("Datos actualizados correctamente");
+
+      setTimeout(() => {
+        setMensajeExito(null);
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      setError("No se pudo crear la colonia");
     }
   };
 
@@ -53,22 +95,14 @@ export default function EditarColoniaPage() {
       nombre,
       ubicacion,
       zona,
-      asignacionPorDia,
     });
+    updateColony();
     if (errorMessage) return setError(errorMessage);
     setError(null);
-
-    console.log({ nombre, ubicacion, zona, asignacionPorDia });
-    // TODO: enviar PUT al backend
-    navigate("/colonias");
   };
 
   // Explicación: validamos que al menos un día tenga una asignación
-  const isValid =
-    nombre &&
-    ubicacion &&
-    zona &&
-    Object.values(asignacionPorDia).some((v) => v !== null);
+  const isValid = nombre && ubicacion && zona;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4">
@@ -82,8 +116,8 @@ export default function EditarColoniaPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
+        <div className="flex justify-center">
+          <div className="space-y-4 w-full max-w-md">
             <Input
               label="Nombre de la colonia"
               type="text"
@@ -96,69 +130,35 @@ export default function EditarColoniaPage() {
               value={ubicacion}
               onChange={(e) => setUbicacion(e.target.value)}
             />
-            <Input
+            <SelectInputBox
               label="Zona"
-              type="text"
               value={zona}
-              onChange={(e) => setZona(e.target.value)}
+              options={zonasDisponibles} // debes cargarlo previamente con `getAllZones`
+              onChange={(newZona) => setZona(newZona)}
+              placeholder="Escribe o selecciona una zona"
             />
-          </div>
-
-          <div className="space-y-3">
-            <h2 className="text-base font-semibold text-white mb-2">
-              Asignar voluntarios por día
-            </h2>
-            {diasSemana.map((dia) => {
-              const disponiblesDia = voluntariosDisponibles
-                .filter((v) => v.dias.includes(dia))
-                .map((v) => ({ label: v.nombre, value: v.nombre }));
-
-              return (
-                <div key={dia} className="flex items-center gap-4">
-                  <span className="w-8 text-white">{dia}</span>
-                  {disponiblesDia.length > 0 ? (
-                    <Select
-                      options={[
-                        { label: "Sin asignar", value: "" },
-                        ...disponiblesDia,
-                      ]}
-                      value={asignacionPorDia[dia] || ""}
-                      onChange={(val) =>
-                        setAsignacionPorDia((prev) => ({
-                          ...prev,
-                          [dia]: val || null,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <span className="text-white/70 text-sm">
-                      Aún no hay voluntarios
-                    </span>
-                  )}
-                </div>
-              );
-            })}
           </div>
         </div>
 
-        <div className="w-full flex justify-center mt-4">
+        <div className="w-full flex flex-col items-center mt-4 space-y-2">
+          {mensajeExito && (
+            <p className="text-sm text-green-400">{mensajeExito}</p>
+          )}
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
           <Button
             label="Guardar cambios"
             variant="tertiary"
             onClick={handleSubmit}
             disabled={!isValid}
           />
-          {error && <p className="text-sm text-red-400 mt-2">{error}</p>}
         </div>
 
         <img
           src="/assets/login/sit-cat-.svg"
           alt="Gato decorativo"
-          className="absolute bottom-8 left-8 w-28 opacity-90 pointer-events-none select-none"
+          className="mx-auto mt-8 w-20 opacity-90 pointer-events-none select-none"
         />
-
-        {/* TODO: Conectar con GET + PUT al backend */}
-        {/* TODO: Mostrar spinner de carga y errores del servidor */}
       </FormContainer>
     </div>
   );

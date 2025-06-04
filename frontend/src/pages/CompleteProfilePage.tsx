@@ -75,7 +75,7 @@ export default function CompleteProfilePage() {
         )
       );
 
-      navigate("/dashboard"); // o siguiente paso
+      navigate("/colonias"); // o siguiente paso
     } catch (err) {
       setError("Error al guardar la disponibilidad. Intenta de nuevo.");
       console.error(err);
