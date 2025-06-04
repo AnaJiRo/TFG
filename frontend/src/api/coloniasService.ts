@@ -96,6 +96,11 @@ export async function getAllZones(params?: {
   return response.data;
 }
 
+export async function getZoneByUserId(userId: number): Promise<Zone | null> {
+  const response = await axios.get(`/colonies/zones/user/${userId}/`);
+  return response.data;
+}
+
 // createZone
 export async function createZone(data: Omit<Zone, "id">): Promise<Zone> {
   const response = await axios.post("/colonies/zones/", data);

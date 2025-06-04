@@ -43,6 +43,18 @@ class ZoneDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ZoneSerializer
     permission_classes = [IsAuthenticated]
 
+class ZoneByUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = get_object_or_404(CustomUser, id=user_id)
+        availability = Availability.objects.filter(user=user).first()
+        if availability:
+            zone = availability.zone
+            serializer = ZoneSerializer(zone)
+            return Response(serializer.data)
+        return Response({"detail": "No zone found for this user."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class ColonyListCreateView(generics.ListCreateAPIView):
     serializer_class = ColonySerializer

@@ -1,11 +1,13 @@
 
 from django.urls import path
-from .views import AssignmentBulkUpdateView, ZoneListCreateView, ZoneDetailView, ColonyListCreateView, ColonyDetailView, AssignmentListCreateView, AssignmentRetrieveUpdateDestroyView, AssignmentSummaryView, AssignmentColonySummaryView, AvailableAssignmentsView, AvailableVolunteersByZoneView
+from .views import AssignmentBulkUpdateView, ZoneByUserView, ZoneListCreateView, ZoneDetailView, ColonyListCreateView, ColonyDetailView, AssignmentListCreateView, AssignmentRetrieveUpdateDestroyView, AssignmentSummaryView, AssignmentColonySummaryView, AvailableAssignmentsView, AvailableVolunteersByZoneView
 
 urlpatterns = [
     path('zones/', ZoneListCreateView.as_view(), name='zone-list-create'),
     path('zones/<int:pk>/', ZoneDetailView.as_view(), name='zone-detail'),
     path('zones/<int:zone_id>/available-volunteers/', AvailableVolunteersByZoneView.as_view(), name='available-volunteers-by-zone'),
+
+    path('zones/user/<int:user_id>/', ZoneByUserView.as_view(), name='zone-by-user'),
     path('colonies/', ColonyListCreateView.as_view(), name='colony-list-create'),
     path('colonies/<int:pk>/', ColonyDetailView.as_view(), name='colony-detail'),
     path('colonies/<int:colony_id>/assignments/', AssignmentListCreateView.as_view(), name='assignment-list-create'),

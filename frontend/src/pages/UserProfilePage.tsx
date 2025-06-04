@@ -6,6 +6,7 @@ import SelectBox from "../components/SelectBox/SelectBox";
 import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
 import { jwtDecode } from "jwt-decode";
 import { getUserById, User } from "../api/authService";
+import { getZoneByUserId, Zone } from "../api/coloniasService";
 //import { getAllZones, Zone } from '../api/coloniasService';
 // import { getMyAvailability, createAvailability, deleteAvailability } from '../api/availabilityService';
 const daysOfWeek = [
@@ -20,8 +21,9 @@ const daysOfWeek = [
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
-  const [zones, setZones] = useState<Zone[]>([]);
+  const [zones, setZones] = useState<Zone | null>(null);
   const [selectedZone, setSelectedZone] = useState("");
+  const [selectedLocality, setSelectedLocality] = useState("");
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
@@ -55,12 +57,14 @@ export default function UserProfilePage() {
     }
   };
 
-  const getUserData = async () => {
+  const getUserDataAndZone = async () => {
     const userId = getIdByToken();
     if (!userId) return;
     try {
       const response = await getUserById(userId);
       setUser(response);
+      const zone = await getZoneByUserId(userId);
+      setZones(zone);
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
     }
@@ -68,7 +72,7 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     getZones();
-    getUserData();
+    getUserDataAndZone();
   }, []);
 
   const handleSaveAvailability = () => {
@@ -114,12 +118,6 @@ export default function UserProfilePage() {
               </span>
             </p>
             <p>
-              <span className="font-semibold text-white">Apellido:</span>{" "}
-              <span className="text-purple-500 font-semibold">
-                {user?.lastname}
-              </span>
-            </p>
-            <p>
               <span className="font-semibold text-white">Email:</span>{" "}
               <span className="text-purple-500 font-semibold">
                 {user?.email}
@@ -134,13 +132,13 @@ export default function UserProfilePage() {
             <p>
               <span className="font-semibold text-white">Localidad:</span>{" "}
               <span className="text-purple-500 font-semibold">
-                {user?.location}
+                {zones?.locality || "No disponible"}
               </span>
             </p>
             <p>
               <span className="font-semibold text-white">Zona:</span>{" "}
               <span className="text-purple-500 font-semibold">
-                {user?.zone}
+                {zones?.name || "No disponible"}
               </span>
             </p>
             <p>
@@ -175,7 +173,7 @@ export default function UserProfilePage() {
                 label=""
                 value={selectedZone}
                 onChange={setSelectedZone}
-                options={zones.map((z) => z.name)}
+                options={zones?.name ? [zones.name] : []}
               />
             </div>
             <div>
