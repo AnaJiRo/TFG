@@ -15,8 +15,8 @@ export default function Navbar() {
       {/* Menú de navegación */}
       <div className="flex gap-6 text-md font-nunito">
 
-        <Link to="/dashboard" className="hover:underline">
-          Dashboard
+        <Link to="/admin/users" className="hover:underline">
+          Gestión Usuarios
         </Link>
         {/* Solo visible para admin */}
         {role === 'admin' && (
@@ -24,10 +24,10 @@ export default function Navbar() {
             Colonias
           </Link>
          )}
-        <Link to="/perfil" className="hover:underline">
+        <Link to="/profile" className="hover:underline">
           Perfil
         </Link>
-        <Link to="/perfil" className="hover:underline">
+        <Link to="/login" className="hover:underline">
           Logout
         </Link>
       </div>

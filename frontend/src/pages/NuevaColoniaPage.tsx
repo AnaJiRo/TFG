@@ -154,6 +154,7 @@ export default function NuevaColoniaPage() {
           <div className="flex-1 space-y-4">
             <Input
               label="Nombre de la colonia"
+              name=""
               type="text"
               placeholder="Ej: Colonia Eleven"
               value={nombre}
@@ -169,6 +170,7 @@ export default function NuevaColoniaPage() {
 
             <Input
               label="Ubicación"
+              name=""
               type="text"
               placeholder="Ej: Calle Mayor, Parque de la Paz..."
               value={ubicacion}
