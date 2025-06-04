@@ -1,67 +1,148 @@
-import { useState } from 'react';
-import Input from '../components/Input/Input';
-import Button from '../components/Button/Button';
-import FormContainer from '../components/FormContainer';
-import { useNavigate } from 'react-router-dom';
-import { validateColoniaData } from '../utils/validators';
+import { useEffect, useState } from "react";
+import Input from "../components/Input/Input";
+import Button from "../components/Button/Button";
+import FormContainer from "../components/FormContainer";
+import { useNavigate } from "react-router-dom";
+import SelectInputBox from "../components/SelectInput/SelectInputBox";
+import Select from "../components/SelectBox/Select";
+import {
+  createColony,
+  createZone,
+  getAllZones,
+  createBulkAssignments,
+  getAvailableVolunteersByZone,
+  Volunter,
+} from "../api/coloniasService";
+import { days, dayShortNames } from "../utils/constants";
 
-const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-
-type Voluntario = {
-  nombre: string;
-  dias: string[]; // ['L', 'X', 'V']
-};
-
-const dummyVoluntarios: Record<string, Voluntario[]> = {
-  'La Nana': [
-    { nombre: 'Laura P.', dias: ['L', 'X'] },
-    { nombre: 'Eva M.', dias: ['J', 'D'] },
-  ],
-  'Centro': [
-    { nombre: 'Antonio G.', dias: ['L', 'M', 'X', 'J'] },
-    { nombre: 'Pedro A.', dias: ['V', 'S', 'D'] },
-  ],
-};
+// type VolunteerOption = {
+//   id: number;
+//   name: string;
+//   email: string;
+//   day: string;
+// };
 
 export default function NuevaColoniaPage() {
-  const [nombre, setNombre] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
-  const [zona, setZona] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [voluntariosDisponibles, setVoluntariosDisponibles] = useState<Voluntario[]>([]);
-
-  const [asignacionPorDia, setAsignacionPorDia] = useState<Record<string, string | null>>(
-    diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
-  );
-
   const navigate = useNavigate();
 
-  
-  const handleSubmit = async () => {
-    const errorMessage = validateColoniaData({ nombre, ubicacion, zona, asignacionPorDia,});
+  const [nombre, setNombre] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  // Lista plana de voluntarios disponibles para la zona
+  const [availableVolunteers, setAvailableVolunteers] = useState<Volunter[]>(
+    []
+  );
+  const [localidades, setLocalidades] = useState<string[]>([]);
+  const [selectedLocalidad, setSelectedLocalidad] = useState<string>("");
+  const [zonesName, setZonesName] = useState<string[]>([]);
+  const [selectedZone, setSelectedZone] = useState<string>("");
 
-    if (errorMessage) {
-      setError(errorMessage);
-      return;
+  // Guardamos el id del voluntario asignado por día
+  const [asignacionPorDia, setAsignacionPorDia] = useState<
+    Record<string, string>
+  >(() => days.reduce((acc, dia) => ({ ...acc, [dia]: "" }), {}));
+
+  const getZones = async () => {
+    try {
+      const zones = await getAllZones();
+      setLocalidades([...new Set(zones.map((zone) => zone.locality))]);
+
+      if (selectedLocalidad) {
+        const zonesByLocality = await getAllZones({
+          locality: selectedLocalidad,
+        });
+        setZonesName(zonesByLocality.map((zone) => zone.name));
+      } else {
+        setZonesName([]);
+      }
+    } catch (error) {
+      console.error("Error al obtener zonas:", error);
     }
-
-    setError(null);
-
-    // TODO: Enviar los datos al backend mediante POST
-    console.log({ nombre, ubicacion, zona, asignacionPorDia });
-
-    navigate('/colonias'); // redirige al dashboard de colonias
   };
 
-  const isValid = nombre && ubicacion && zona && Object.values(asignacionPorDia).some(v => v !== null);
+  // Buscar voluntarios disponibles para la zona seleccionada
+  const fetchAvailableVolunteersForZone = async () => {
+    setAvailableVolunteers([]);
+    if (!selectedZone || !selectedLocalidad) return;
+    try {
+      // Buscar la zona para obtener su id
+      const zones = await getAllZones({
+        locality: selectedLocalidad,
+        name: selectedZone,
+      });
+      if (!zones.length) return;
+      const zoneId = zones[0].id;
+      // Usar solo el nuevo endpoint simplificado
+      const volunteersList = await getAvailableVolunteersByZone(zoneId);
+      setAvailableVolunteers(volunteersList);
+    } catch {
+      setAvailableVolunteers([]);
+    }
+  };
+
+  console.log(zonesName);
+
+  const handleSubmit = async () => {
+    setError(null);
+    // 1. Crear zona si no existe
+    const zoneExists = await getAllZones({
+      locality: selectedLocalidad,
+      name: selectedZone,
+    });
+    let zoneCreated = null;
+    if (!zoneExists || zoneExists.length === 0) {
+      await createZone({
+        name: selectedZone,
+        locality: selectedLocalidad,
+      });
+      zoneCreated = await getAllZones({
+        locality: selectedLocalidad,
+        name: selectedZone,
+      });
+    }
+    if (!zoneCreated && !zoneExists) {
+      setError("No se pudo crear o encontrar la zona seleccionada");
+      return;
+    }
+    // 2. Crear colonia
+    const newColony = await createColony({
+      name: nombre,
+      ubication: ubicacion,
+      zone: zoneCreated?.length ? zoneCreated[0].id : zoneExists[0]?.id,
+      size: 3,
+    });
+    // 3. Guardar asignaciones (solo si hay alguna)
+    const asignacionesFinales: Record<string, number | null> = {};
+    days.forEach((dia) => {
+      const val = asignacionPorDia[dia];
+      asignacionesFinales[dia] = val ? parseInt(val) : null;
+    });
+    // Si hay al menos una asignación
+    if (Object.values(asignacionesFinales).some((v) => v !== null)) {
+      await createBulkAssignments(newColony.id, asignacionesFinales);
+    }
+    // Navegar o mostrar éxito
+    navigate("/colonias");
+  };
+
+  // Actualizar zonas cuando cambia la localidad
+  useEffect(() => {
+    getZones();
+  }, [selectedLocalidad]);
+
+  // Cuando cambia la zona, limpiar asignaciones y voluntarios
+  useEffect(() => {
+    setAsignacionPorDia(days.reduce((acc, dia) => ({ ...acc, [dia]: "" }), {}));
+    fetchAvailableVolunteersForZone();
+  }, [selectedZone, selectedZone]);
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4">
       <FormContainer maxWidth="max-w-4xl" className="relative">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white font-poppins">Nueva Colonia</h1>
+          <h1 className="text-3xl font-bold text-white font-poppins">
+            Nueva Colonia
+          </h1>
           <p className="text-white/90 mt-1 font-nunito">
             Completa para registrar una nueva colonia
           </p>
@@ -69,7 +150,6 @@ export default function NuevaColoniaPage() {
 
         {/* Layout en dos columnas */}
         <div className="flex flex-col md:flex-row gap-8 w-full">
-          
           {/* Columna izquierda: info general */}
           <div className="flex-1 space-y-4">
             <Input
@@ -81,6 +161,13 @@ export default function NuevaColoniaPage() {
               onChange={(e) => setNombre(e.target.value)}
             />
 
+            <SelectInputBox
+              label="Localidad"
+              value={selectedLocalidad}
+              onChange={(value) => setSelectedLocalidad(value)}
+              options={localidades}
+            />
+
             <Input
               label="Ubicación"
               name=""
@@ -90,59 +177,54 @@ export default function NuevaColoniaPage() {
               onChange={(e) => setUbicacion(e.target.value)}
             />
 
-            <Input
+            <SelectInputBox
               label="Zona"
-              name=""
-              type="text"
-              placeholder="Ej: La Nana"
-              value={zona}
-              onChange={(e) => {
-                const nuevaZona = e.target.value;
-                setZona(nuevaZona);
-
-                const voluntariosZona = dummyVoluntarios[nuevaZona] || [];
-                setVoluntariosDisponibles(voluntariosZona);
-
-                // Reiniciar asignación
-                setAsignacionPorDia(
-                  diasSemana.reduce((acc, dia) => ({ ...acc, [dia]: null }), {})
-                );
-              }}
+              value={selectedZone}
+              onChange={(value) => setSelectedZone(value)}
+              options={zonesName}
             />
           </div>
 
           {/* Columna derecha: asignación por día */}
           <div className="flex-1 space-y-3">
-            <h2 className="text-white font-semibold mb-2">Asignar voluntarios por día</h2>
+            <h2 className="text-white font-semibold mb-2">
+              Asignar voluntarios por día
+            </h2>
 
-            {diasSemana.map((dia) => {
-              const disponiblesDia = voluntariosDisponibles.filter((v) => v.dias.includes(dia));
+            {days.map((dia) => {
+              // Filtrar voluntarios por día
+              const disponibles = availableVolunteers.filter(
+                (v) => v.day === dia
+              );
+              console.log("disponibles:", disponibles);
+              const options = disponibles.map((v) => ({
+                value: v.id?.toString(),
+                label: v.name,
+              }));
 
+              console.log("options:", options);
               return (
-                <div key={dia} className="flex items-center gap-4">
-                  <span className="w-10 text-white">{dia}</span>
-
-                  {disponiblesDia.length > 0 ? (
-                    <select
-                      value={asignacionPorDia[dia] || ''}
-                      onChange={(e) =>
+                <div
+                  key={dayShortNames[dia]}
+                  className="flex items-center gap-4"
+                >
+                  <span className="w-10 text-white">{dayShortNames[dia]}</span>
+                  {options.length > 0 ? (
+                    <Select
+                      value={asignacionPorDia[dia]}
+                      options={options}
+                      onChange={(nuevoValor) =>
                         setAsignacionPorDia((prev) => ({
                           ...prev,
-                          [dia]: e.target.value || null,
+                          [dia]: nuevoValor,
                         }))
                       }
-                      className="w-full px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-white/10 text-purple-500
-                       border-purpleTheme-border focus:ring-2 focus:ring-purpleTheme-primary"
-                    >
-                      <option value="">Sin asignar</option>
-                      {disponiblesDia.map((v) => (
-                        <option key={v.nombre} value={v.nombre}>
-                          {v.nombre}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Sin asignar"
+                    />
                   ) : (
-                    <span className="text-white/70 text-sm">Aún no hay voluntarios</span>
+                    <span className="text-white/70 text-sm">
+                      Aún no hay voluntarios
+                    </span>
                   )}
                 </div>
               );
@@ -156,7 +238,7 @@ export default function NuevaColoniaPage() {
             label="Guardar colonia"
             variant="tertiary"
             onClick={handleSubmit}
-            disabled={!isValid}
+            // disabled={!isValid}
           />
         </div>
 
@@ -168,9 +250,10 @@ export default function NuevaColoniaPage() {
         />
 
         {/* Error */}
-        {error && <p className="text-sm text-red-400 mt-2 text-center">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-400 mt-2 text-center">{error}</p>
+        )}
       </FormContainer>
-
     </div>
   );
 }
