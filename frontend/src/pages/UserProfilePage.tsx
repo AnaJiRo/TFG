@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
 import Button from "../components/Button/Button";
 import SelectBox from "../components/SelectBox/SelectBox";
@@ -46,6 +46,7 @@ const daysMap: Record<string, string> = {
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [zones, setZones] = useState<Zone | null>(null);
   const [allZones, setAllZones] = useState<Zone[]>([]);
   const [selectedZone, setSelectedZone] = useState("");
@@ -68,7 +69,7 @@ export default function UserProfilePage() {
   };
 
   const getUserDataAndZone = async () => {
-    const userId = getIdByToken();
+    const userId = id || getIdByToken();
     if (!userId) return;
     try {
       const response = await getUserById(userId);
@@ -105,7 +106,7 @@ export default function UserProfilePage() {
         console.error("Zona seleccionada no encontrada");
         return;
       }
-      const userId = getIdByToken();
+      const userId = id || getIdByToken();
       if (!userId) {
         console.error("No se pudo obtener el ID del usuario");
         return;
@@ -114,8 +115,10 @@ export default function UserProfilePage() {
         (day) => daysMap[day] || day.toLowerCase()
       );
       console.log("Días disponibles en inglés:", englishDays);
+      // TODO: El backend debe recibir el id, y el usuario del id.
+
       const availabilityData: AvailabilityBulk = {
-        user: userId,
+        user_id: userId,
         zone_id: selectedZoneId,
         days: englishDays,
       };
@@ -198,7 +201,7 @@ export default function UserProfilePage() {
               <Button
                 label="Editar perfil"
                 variant="tertiary"
-                onClick={() => navigate(`/profile/${user?.id}/edit`)}
+                onClick={() => navigate(`/profile/${user?.id}/edit/`)}
               />
             </div>
           </div>

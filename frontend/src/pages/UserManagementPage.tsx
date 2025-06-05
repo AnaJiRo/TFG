@@ -53,20 +53,22 @@ export default function UserManagementPage() {
   };
   useEffect(() => {
     getAllUsersAndZones();
-  }, [users]);
+  }, []);
 
   const promoteUserFunc = (email: string) => {
     promoteUser(email);
+    getAllUsersAndZones();
     alert("Usuario promovido a admin correctamente.");
   };
 
   const editUser = (id: number) => {
-    navigate(`/admin/users/${id}/edit`);
+    navigate(`/profile/${id}`);
   };
 
   const deleteUserFun = async (id: number) => {
     await deleteUser(String(id));
     setUsers(users.filter((user) => user.id !== id));
+    getAllUsersAndZones();
     alert("Usuario eliminado correctamente.");
   };
 

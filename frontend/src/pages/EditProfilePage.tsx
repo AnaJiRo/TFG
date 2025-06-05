@@ -48,7 +48,7 @@ export default function EditProfilePage() {
         phone: formData.phone,
         role: formData.role,
       });
-      navigate("/profile");
+      navigate(`/profile/${id}`);
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       alert("Hubo un error al actualizar el usuario.");
@@ -99,7 +99,7 @@ export default function EditProfilePage() {
             <Button
               label="Cancelar"
               variant="secondary"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(`/profile/${id}`)}
             />
           </div>
         </form>

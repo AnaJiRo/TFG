@@ -47,12 +47,13 @@ class AvailabilityBulkUpdateView(APIView):
         serializer = AvailabilityBulkUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = request.user
+        user_id = serializer.validated_data['user_id']
+        user = get_user_model().objects.get(id=user_id)
         zone_id = serializer.validated_data['zone_id']
         selected_days = set(serializer.validated_data['days'])
 
-        # 1. Obtener todas las disponibilidades actuales del usuario
-        current_availabilities = Availability.objects.filter(user=user)
+        # 1. Obtener todas las disponibilidades actuales del usuario en esa zona
+        current_availabilities = Availability.objects.filter(user=user, zone_id=zone_id)
         current_days = set(current_availabilities.values_list('day', flat=True))
 
         # 2. Crear las nuevas (que no existen)
@@ -64,7 +65,7 @@ class AvailabilityBulkUpdateView(APIView):
             )
 
         # 3. Eliminar las que ya no están seleccionadas
-        Availability.objects.filter(user=user, day__in=(current_days - selected_days)).delete()
+        Availability.objects.filter(user=user, zone_id=zone_id, day__in=(current_days - selected_days)).delete()
 
         return Response({"message": "Disponibilidad actualizada correctamente."}, status=status.HTTP_200_OK)
 ## Obtener todas las disponibilidades de un usuario

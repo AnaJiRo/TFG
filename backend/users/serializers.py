@@ -48,12 +48,19 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user']
 
 
+
 class AvailabilityBulkUpdateSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
     zone_id = serializers.IntegerField()
     days = serializers.ListField(
         child=serializers.ChoiceField(choices=Availability.DAYS_OF_WEEK),
         allow_empty=True
     )
+
+    def validate_user_id(self, value):
+        if not User.objects.filter(id=value).exists():
+            raise serializers.ValidationError("El usuario especificado no existe.")
+        return value
 
     def validate_zone_id(self, value):
         if not Zone.objects.filter(id=value).exists():

@@ -133,7 +133,7 @@ export async function updateAvailability(
 }
 
 export type AvailabilityBulk = {
-  user?: number;
+  user_id: number;
   zone_id: number;
   days: string[];
 };

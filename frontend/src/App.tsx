@@ -27,6 +27,7 @@ function App() {
 
         <Route path="/admin/users/:id/edit" element={<EditUserPage />} />
         <Route path="/profile" element={<UserProfilePage />} />
+        <Route path="/profile/:id" element={<UserProfilePage />} />
         <Route path="/profile/:id/edit" element={<EditProfilePage />} />
         <Route
           path="/unauthorized"
@@ -45,12 +46,10 @@ function App() {
       <Route path="/completar-perfil" element={<CompleteProfilePage />} />
 
       {/* 🔐 Ruta protegida */}
-      <Route element={<PrivateRoute />}>
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        {/* Aquí puedes meter más rutas privadas si quieres */}
-      </Route>
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-        <Route path="/admin/users" element={<UserManagementPage />} />
+        <Route element={<DefaultLayout />}>
+          <Route path="/admin/users" element={<UserManagementPage />} />
+        </Route>
       </Route>
     </Routes>
   );
