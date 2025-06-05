@@ -10,10 +10,10 @@ import {
   getAvailableByUserId,
   getZoneByUserId,
   Zone,
-  availability,
   getAllZones,
+  createBulkAvailability,
+  AvailabilityBulk,
 } from "../api/coloniasService";
-import { all } from "axios";
 const daysOfWeek = [
   "Lunes",
   "Martes",
@@ -33,6 +33,18 @@ const daysMapReverse: Record<string, string> = {
   saturday: "Sábado",
   sunday: "Domingo",
 };
+
+//  daysmap
+const daysMap: Record<string, string> = {
+  Lunes: "monday",
+  Martes: "tuesday",
+  Miércoles: "wednesday",
+  Jueves: "thursday",
+  Viernes: "friday",
+  Sábado: "saturday",
+  Domingo: "sunday",
+};
+
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const [zones, setZones] = useState<Zone | null>(null);
@@ -40,7 +52,6 @@ export default function UserProfilePage() {
   const [selectedZone, setSelectedZone] = useState("");
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const [availability, setAvailability] = useState<availability[]>([]);
 
   const getIdByToken = () => {
     const token = localStorage.getItem("access_token");
@@ -71,7 +82,6 @@ export default function UserProfilePage() {
       });
       setAllZones(allZonesResponse);
       const availability = await getAvailableByUserId(userId);
-      setAvailability(availability);
       const days = availability.map((day) => {
         return daysMapReverse[day.day] || day.day;
       });
@@ -85,11 +95,36 @@ export default function UserProfilePage() {
     getUserDataAndZone();
   }, []);
 
-  const handleSaveAvailability = () => {
-    console.log("Disponibilidad guardada:", { selectedZone, availableDays });
-    console.log("allZones:", allZones);
-    console.log("zona seleccionada:", selectedZone);
-    // TODO: enviar al backend
+  const handleSaveAvailability = async () => {
+    try {
+      // get selected zone ID
+      const selectedZoneId = allZones.find(
+        (zone) => zone.name === selectedZone
+      )?.id;
+
+      if (!selectedZoneId) {
+        console.error("Zona seleccionada no encontrada");
+        return;
+      }
+      const userId = getIdByToken();
+      if (!userId) {
+        console.error("No se pudo obtener el ID del usuario");
+        return;
+      }
+      const englishDays = availableDays.map(
+        (day) => daysMap[day] || day.toLowerCase()
+      );
+      console.log("Días disponibles en inglés:", englishDays);
+      const availabilityData: AvailabilityBulk = {
+        user: userId,
+        zone_id: selectedZoneId,
+        days: englishDays,
+      };
+      await createBulkAvailability(availabilityData);
+      alert("Disponibilidad guardada correctamente.");
+    } catch (error) {
+      console.error("Error al guardar la disponibilidad:", error);
+    }
   };
 
   return (

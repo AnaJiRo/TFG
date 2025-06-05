@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.contrib.auth import get_user_model
-from .serializers import CustomTokenObtainPairSerializer, UserSerializer, AvailabilitySerializer
+from .serializers import AvailabilityBulkUpdateSerializer, CustomTokenObtainPairSerializer, UserSerializer, AvailabilitySerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdmin, IsAdminOrSelf
 from rest_framework.response import Response    
@@ -40,6 +40,33 @@ class AvailabilityDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Availability.objects.all()
         return Availability.objects.filter(user=user)
     
+class AvailabilityBulkUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        serializer = AvailabilityBulkUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        zone_id = serializer.validated_data['zone_id']
+        selected_days = set(serializer.validated_data['days'])
+
+        # 1. Obtener todas las disponibilidades actuales del usuario
+        current_availabilities = Availability.objects.filter(user=user)
+        current_days = set(current_availabilities.values_list('day', flat=True))
+
+        # 2. Crear las nuevas (que no existen)
+        for day in selected_days - current_days:
+            Availability.objects.create(
+                user=user,
+                day=day,
+                zone_id=zone_id
+            )
+
+        # 3. Eliminar las que ya no están seleccionadas
+        Availability.objects.filter(user=user, day__in=(current_days - selected_days)).delete()
+
+        return Response({"message": "Disponibilidad actualizada correctamente."}, status=status.HTTP_200_OK)
 ## Obtener todas las disponibilidades de un usuario
 class UserAvailabilityListView(generics.ListAPIView):
     serializer_class = AvailabilitySerializer

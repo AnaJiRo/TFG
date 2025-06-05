@@ -121,6 +121,27 @@ export async function createAvailability(
   return response.data;
 }
 
+// update availability
+export async function updateAvailability(
+  id: number,
+  data: Omit<availability, "user">
+): Promise<availability> {
+  const response = await axios.put(`/users/availability/${id}/`, data);
+  return response.data;
+}
+
+export type AvailabilityBulk = {
+  user?: number;
+  zone_id: number;
+  days: string[];
+};
+
+export async function createBulkAvailability(
+  data: AvailabilityBulk
+): Promise<AvailabilityBulk> {
+  const response = await axios.put("/users/availability/bulk/", data);
+  return response.data;
+}
 export async function getAvailableByUserId(
   userId: number
 ): Promise<availability[]> {

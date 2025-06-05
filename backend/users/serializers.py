@@ -47,6 +47,20 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user']
 
 
+class AvailabilityBulkUpdateSerializer(serializers.Serializer):
+    zone_id = serializers.IntegerField()
+    days = serializers.ListField(
+        child=serializers.ChoiceField(choices=Availability.DAYS_OF_WEEK),
+        allow_empty=True
+    )
+
+    def validate_zone_id(self, value):
+        if not Zone.objects.filter(id=value).exists():
+            raise serializers.ValidationError("La zona especificada no existe.")
+        return value
+
+
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
