@@ -6,9 +6,14 @@ import SelectBox from "../components/SelectBox/SelectBox";
 import CheckboxGroup from "../components/Checkbox/CheckboxGroup";
 import { jwtDecode } from "jwt-decode";
 import { getUserById, User } from "../api/authService";
-import { getZoneByUserId, Zone } from "../api/coloniasService";
-//import { getAllZones, Zone } from '../api/coloniasService';
-// import { getMyAvailability, createAvailability, deleteAvailability } from '../api/availabilityService';
+import {
+  getAvailableByUserId,
+  getZoneByUserId,
+  Zone,
+  availability,
+  getAllZones,
+} from "../api/coloniasService";
+import { all } from "axios";
 const daysOfWeek = [
   "Lunes",
   "Martes",
@@ -19,28 +24,23 @@ const daysOfWeek = [
   "Domingo",
 ];
 
+const daysMapReverse: Record<string, string> = {
+  monday: "Lunes",
+  tuesday: "Martes",
+  wednesday: "Miércoles",
+  thursday: "Jueves",
+  friday: "Viernes",
+  saturday: "Sábado",
+  sunday: "Domingo",
+};
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const [zones, setZones] = useState<Zone | null>(null);
+  const [allZones, setAllZones] = useState<Zone[]>([]);
   const [selectedZone, setSelectedZone] = useState("");
-  const [selectedLocality, setSelectedLocality] = useState("");
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null);
-
-  const toggleDay = (day: string) => {
-    setAvailableDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
-  };
-
-  const getZones = async () => {
-    try {
-      const response = await getAllZones();
-      setZones(response);
-    } catch (err) {
-      console.error("Error al cargar zonas:", err);
-    }
-  };
+  const [availability, setAvailability] = useState<availability[]>([]);
 
   const getIdByToken = () => {
     const token = localStorage.getItem("access_token");
@@ -65,18 +65,30 @@ export default function UserProfilePage() {
       setUser(response);
       const zone = await getZoneByUserId(userId);
       setZones(zone);
+      setSelectedZone(zone?.name || "");
+      const allZonesResponse = await getAllZones({
+        locality: zone?.locality || "",
+      });
+      setAllZones(allZonesResponse);
+      const availability = await getAvailableByUserId(userId);
+      setAvailability(availability);
+      const days = availability.map((day) => {
+        return daysMapReverse[day.day] || day.day;
+      });
+      setAvailableDays(new Set(days).size > 0 ? days : []);
     } catch (error) {
       console.error("Error al obtener los datos del usuario:", error);
     }
   };
 
   useEffect(() => {
-    getZones();
     getUserDataAndZone();
   }, []);
 
   const handleSaveAvailability = () => {
     console.log("Disponibilidad guardada:", { selectedZone, availableDays });
+    console.log("allZones:", allZones);
+    console.log("zona seleccionada:", selectedZone);
     // TODO: enviar al backend
   };
 
@@ -173,7 +185,7 @@ export default function UserProfilePage() {
                 label=""
                 value={selectedZone}
                 onChange={setSelectedZone}
-                options={zones?.name ? [zones.name] : []}
+                options={allZones.map((zone) => zone.name || "No disponible")}
               />
             </div>
             <div>
@@ -182,7 +194,13 @@ export default function UserProfilePage() {
                 options={daysOfWeek}
                 selected={availableDays}
                 direction="row"
-                onChange={toggleDay}
+                onChange={(day) => {
+                  setAvailableDays((prev) =>
+                    prev.includes(day)
+                      ? prev.filter((d) => d !== day)
+                      : [...prev, day]
+                  );
+                }}
                 responsive
               />
             </div>

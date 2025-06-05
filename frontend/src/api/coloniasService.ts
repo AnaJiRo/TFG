@@ -121,6 +121,13 @@ export async function createAvailability(
   return response.data;
 }
 
+export async function getAvailableByUserId(
+  userId: number
+): Promise<availability[]> {
+  const response = await axios.get(`/users/availability/user/${userId}/`);
+  return response.data;
+}
+
 export type Volunter = {
   id: number;
   name: string;

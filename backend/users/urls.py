@@ -1,7 +1,7 @@
 # users/urls.py
 
 from django.urls import path
-from .views import CustomTokenObtainPairView, RegisterUserView, ListUserView, RetrieveUserView, UpdateUserView, DeleteUserView, PromoteByEmailView, MyAvailabilityListCreateView, AllAvailabilityListView, AvailabilityDetailView
+from .views import CustomTokenObtainPairView, RegisterUserView, ListUserView, RetrieveUserView, UpdateUserView, DeleteUserView, PromoteByEmailView, MyAvailabilityListCreateView, AllAvailabilityListView, AvailabilityDetailView, UserAvailabilityListView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('availability/', MyAvailabilityListCreateView.as_view(), name='my-availability'),
     path('availability/all/', AllAvailabilityListView.as_view(), name='all-availability'),
     path('availability/<int:pk>/', AvailabilityDetailView.as_view(), name='availability-detail'),
+    path('availability/user/<int:user_id>/', UserAvailabilityListView.as_view(), name='user-availability-list'),
 ]

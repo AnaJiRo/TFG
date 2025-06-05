@@ -39,6 +39,15 @@ class AvailabilityDetailView(generics.RetrieveUpdateDestroyAPIView):
         if user.role == 'admin':
             return Availability.objects.all()
         return Availability.objects.filter(user=user)
+    
+## Obtener todas las disponibilidades de un usuario
+class UserAvailabilityListView(generics.ListAPIView):
+    serializer_class = AvailabilitySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Availability.objects.filter(user__id=user_id)
 
 
 
