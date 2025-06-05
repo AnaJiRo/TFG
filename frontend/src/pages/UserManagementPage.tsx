@@ -17,7 +17,6 @@ interface UserList {
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<UserList[]>([]);
-  const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   const getAllUsersAndZones = async () => {
@@ -71,10 +70,6 @@ export default function UserManagementPage() {
     alert("Usuario eliminado correctamente.");
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="min-h-screen bg-purple-400 text-white p-6 font-nunito ">
       <h1 className="text-4xl font-bold font-poppins text-center mb-6 flex items-center justify-center gap-4">
@@ -100,7 +95,7 @@ export default function UserManagementPage() {
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map((user) => (
+          {users.map((user) => (
             <tr key={user.id} className="border-t">
               <td className="p-3">{user.username}</td>
               <td className="p-3">{user.name}</td>
