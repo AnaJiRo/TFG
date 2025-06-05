@@ -55,3 +55,8 @@ export async function updateUser(
 export async function deleteUser(userId: string): Promise<void> {
   await axios.delete(`/users/${userId}/delete/`);
 }
+
+export async function promoteUser(email: string): Promise<User> {
+  const response = await axios.patch(`/users/promote/`, { email });
+  return response.data;
+}

@@ -1,7 +1,7 @@
 // src/pages/UserManagementPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteUser, getUsers } from "../api/authService";
+import { deleteUser, getUsers, promoteUser } from "../api/authService";
 import { getZoneByUserId } from "../api/coloniasService";
 
 interface UserList {
@@ -53,29 +53,22 @@ export default function UserManagementPage() {
     }
   };
   useEffect(() => {
-    // Aquí deberías hacer la llamada al backend para obtener los usuarios
-    // Por ahora usaremos datos de ejemplo
     getAllUsersAndZones();
-  }, []);
+  }, [users]);
 
-  const promoteUser = (id: number) => {
-    // Lógica para promover al usuario a admin
-    console.log(`Promover usuario con ID ${id}`);
+  const promoteUserFunc = (email: string) => {
+    promoteUser(email);
+    alert("Usuario promovido a admin correctamente.");
   };
 
-  //No se si la ruta esta bien
   const editUser = (id: number) => {
     navigate(`/admin/users/${id}/edit`);
   };
 
   const deleteUserFun = async (id: number) => {
-    // Lógica para eliminar usuario
-    console.log(`Eliminar usuario con ID ${id}`);
     await deleteUser(String(id));
-    // Usuario eliminado, actualizar la lista
     setUsers(users.filter((user) => user.id !== id));
     alert("Usuario eliminado correctamente.");
-    getAllUsersAndZones(); // Refrescar la lista de usuarios
   };
 
   const filteredUsers = users.filter((user) =>
@@ -140,7 +133,7 @@ export default function UserManagementPage() {
                   </button>
                   {user.role !== "admin" && (
                     <button
-                      onClick={() => promoteUser(user.id)}
+                      onClick={() => promoteUserFunc(user.email)}
                       className="w-8 h-8 flex items-center justify-center rounded-md bg-fuchsia-600 hover:bg-fuchsia-700 text-white"
                     >
                       <img
