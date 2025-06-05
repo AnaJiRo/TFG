@@ -1,7 +1,7 @@
 // src/pages/UserManagementPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUsers } from "../api/authService";
+import { deleteUser, getUsers } from "../api/authService";
 import { getZoneByUserId } from "../api/coloniasService";
 
 interface UserList {
@@ -68,9 +68,14 @@ export default function UserManagementPage() {
     navigate(`/admin/users/${id}/edit`);
   };
 
-  const deleteUser = (id: number) => {
+  const deleteUserFun = async (id: number) => {
     // Lógica para eliminar usuario
     console.log(`Eliminar usuario con ID ${id}`);
+    await deleteUser(String(id));
+    // Usuario eliminado, actualizar la lista
+    setUsers(users.filter((user) => user.id !== id));
+    alert("Usuario eliminado correctamente.");
+    getAllUsersAndZones(); // Refrescar la lista de usuarios
   };
 
   const filteredUsers = users.filter((user) =>
@@ -124,7 +129,7 @@ export default function UserManagementPage() {
                     />
                   </button>
                   <button
-                    onClick={() => deleteUser(user.id)}
+                    onClick={() => deleteUserFun(user.id)}
                     className="w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white"
                   >
                     <img

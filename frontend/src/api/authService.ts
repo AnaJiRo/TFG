@@ -51,3 +51,7 @@ export async function updateUser(
   const response = await axios.put(`/users/${userId}/update/`, data);
   return response.data;
 }
+
+export async function deleteUser(userId: string): Promise<void> {
+  await axios.delete(`/users/${userId}/delete/`);
+}
