@@ -2,63 +2,60 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUsers } from "../api/authService";
+import { getZoneByUserId } from "../api/coloniasService";
 
-interface User {
+interface UserList {
   id: number;
   username: string;
   name: string;
-  lastname: string;
   email: string;
   location: string;
   zone: string;
   phone: string;
-  role: "admin" | "voluntary";
+  role: string;
 }
 
 export default function UserManagementPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserList[]>([]);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
+  const getAllUsersAndZones = async () => {
+    try {
+      const usersData = await getUsers();
+      // get zones for each user if needed
+      const usersWithZones: UserList[] = await Promise.all(
+        usersData.map(async (user) => {
+          try {
+            const zone = await getZoneByUserId(user.id);
+            return {
+              ...user,
+              id: Number(user.id),
+              zone: zone ? zone.name : "No asignada",
+              location: zone ? zone.locality : "No asignada",
+            };
+          } catch (error) {
+            console.error("Error al obtener la zona del usuario:", error);
+            return {
+              ...user,
+              id: Number(user.id),
+              zone: "No asignada",
+              location: "No asignada",
+            };
+          }
+        })
+      );
+      setUsers(usersWithZones);
+      console.log("Usuarios con zonas:", usersWithZones);
+    } catch (error) {
+      console.error("Error al obtener los usuarios:", error);
+      alert("Hubo un error al obtener los usuarios.");
+    }
+  };
   useEffect(() => {
     // Aquí deberías hacer la llamada al backend para obtener los usuarios
     // Por ahora usaremos datos de ejemplo
-    getUsers();
-    setUsers([
-      {
-        id: 1,
-        username: "lau_32",
-        name: "Laura",
-        lastname: "Sánchez",
-        email: "laura@example.com",
-        location: "Sevilla",
-        zone: "Centro",
-        phone: "600111222",
-        role: "voluntary",
-      },
-      {
-        id: 2,
-        username: "Carmen_32",
-        name: "Carmen",
-        lastname: "Pérez",
-        email: "carmen@example.com",
-        location: "Dos Hermanas",
-        zone: "Norte",
-        phone: "655888999",
-        role: "voluntary",
-      },
-      {
-        id: 3,
-        username: "Mai_32",
-        name: "Admin Maite",
-        lastname: "Garcia",
-        email: "Mai.Admin@example.com",
-        location: "Sevilla",
-        zone: "Todos",
-        phone: "644555666",
-        role: "admin",
-      },
-    ]);
+    getAllUsersAndZones();
   }, []);
 
   const promoteUser = (id: number) => {
