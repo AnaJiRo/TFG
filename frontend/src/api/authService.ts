@@ -43,3 +43,11 @@ export async function getUserById(userId: string): Promise<User> {
   const response = await axios.get(`/users/${userId}/`);
   return response.data;
 }
+
+export async function updateUser(
+  userId: string,
+  data: Partial<Omit<User, "id">>
+): Promise<User> {
+  const response = await axios.put(`/users/${userId}/update/`, data);
+  return response.data;
+}

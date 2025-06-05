@@ -7,11 +7,12 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = User
-        fields = ['id', 'username','name', 'email', 'phone', 'password', 'role']
+        fields = ['id', 'username', 'name', 'email', 'phone', 'password', 'role']
+        read_only_fields = ['role']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -24,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # nadie puede cambiar el rol desde aquí, salvo si es admin
         request = self.context.get('request')
-        if request and not request.user.is_admin():
+        if request and not request.user.role == 'admin':
             validated_data.pop('role', None)  # eliminamos 'role' si alguien lo intenta modificar
 
         if 'password' in validated_data:

@@ -34,7 +34,6 @@ const daysMapReverse: Record<string, string> = {
   sunday: "Domingo",
 };
 
-//  daysmap
 const daysMap: Record<string, string> = {
   Lunes: "monday",
   Martes: "tuesday",
@@ -199,7 +198,7 @@ export default function UserProfilePage() {
               <Button
                 label="Editar perfil"
                 variant="tertiary"
-                onClick={() => navigate(`/profile/:id/edit`)}
+                onClick={() => navigate(`/profile/${user?.id}/edit`)}
               />
             </div>
           </div>
