@@ -22,7 +22,7 @@ export default function SelectBox({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-fuchsia-300 text-black
+        className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-fuchsia-300 text-purple-500
             ${
               value ? "border-purpleTheme-primary" : "border-purpleTheme-border"
             }

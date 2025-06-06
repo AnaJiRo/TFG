@@ -134,8 +134,10 @@ export default function DetalleColoniaPage() {
                 className="w-5 h-5"
               />
               <div>
-                <p className="font-semibold">Nombre:</p>
-                <p>{colonia.colonia}</p>
+                <span className="font-semibold mb-4">Nombre:</span>
+                <p>
+                  <span className="font-semibold text-purple-500">{colonia.colonia}</span>
+                </p>
               </div>
             </div>
 
@@ -146,8 +148,10 @@ export default function DetalleColoniaPage() {
                 className="w-5 h-5"
               />
               <div>
-                <p className="font-semibold">Ubicación:</p>
-                <p>{colonia.ubicacion}</p>
+                <span className="font-semibold mb-4">Ubicación:</span>
+                <p> 
+                  <span className="font-semibold text-purple-500">{colonia.ubicacion}</span>
+                </p>
               </div>
             </div>
 
@@ -158,8 +162,10 @@ export default function DetalleColoniaPage() {
                 className="w-5 h-5"
               />
               <div>
-                <p className="font-semibold">Zona:</p>
-                <p>{colonia.zona}</p>
+                <span className="font-semibold mb-4">Zona:</span>
+                  <p>
+                    <span className="font-semibold text-purple-500">{colonia.zona}</span>
+                  </p>
               </div>
             </div>
 
@@ -240,8 +246,10 @@ export default function DetalleColoniaPage() {
         {/* Iconos decorativos */}
         <img
           src="/assets/login/pawprint-cat.svg"
-          alt="Huella gato"
-          className="absolute top-6 right-8 w-20 opacity-90 pointer-events-none select-none"
+          alt="Huella gato - Volver atrás"
+          onClick={() => navigate('/colonias')}
+          className="absolute top-6 right-8 w-20 opacity-90 cursor-pointer transition-transform hover:scale-110"
+          title="Volver atrás"
         />
         <img
           src="/assets/login/sit-cat-.svg"

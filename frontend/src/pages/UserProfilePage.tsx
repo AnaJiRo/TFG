@@ -217,7 +217,7 @@ export default function UserProfilePage() {
               Disponibilidad:
             </h2>
             <div>
-              <p className="mb-1 font-semibold">Zona preferida:</p>
+              <p className="mb-1 font-semibold text-white ">Zona preferida:</p>
               <SelectBox
                 label=""
                 value={selectedZone}
@@ -226,7 +226,7 @@ export default function UserProfilePage() {
               />
             </div>
             <div>
-              <p className="mb-1 font-semibold">Días disponibles:</p>
+              <p className="mb-1 font-semibold  text-white">Días disponibles:</p>
               <CheckboxGroup
                 options={daysOfWeek}
                 selected={availableDays}

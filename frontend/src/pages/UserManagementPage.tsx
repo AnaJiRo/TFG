@@ -73,7 +73,7 @@ export default function UserManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-purple-400 text-white p-6 font-nunito ">
+    <div className="min-h-screen bg-gradient-to-br from-purple-800 to-purple-400 text-white p-6 font-nunito ">
       <h1 className="text-4xl font-bold font-poppins text-center mb-6 flex items-center justify-center gap-4">
         <img
           src="/assets/icons/user-management.svg"
@@ -84,7 +84,7 @@ export default function UserManagementPage() {
       </h1>
 
       <table className="w-full bg-white rounded-xl shadow-md p-6 text-purple-900">
-        <thead className="bg-purple-200">
+        <thead className="bg-fuchsia-300">
           <tr>
             <th className="p-3 text-left">Nombre Usuario</th>
             <th className="p-3 text-left">Nombre</th>

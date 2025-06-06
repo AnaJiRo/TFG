@@ -17,7 +17,7 @@ export default function SelectInputBox({
 
   return (
     <div className="flex flex-col w-full font-nunito">
-      <label className="mb-1 text-sm font-semibold text-purpleTheme-text">
+      <label className="mb-1 text-sm font-semibold text-white">
         {label}
       </label>
 
@@ -27,7 +27,7 @@ export default function SelectInputBox({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-fuchsia-300 text-black
+        className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all bg-fuchsia-300 text-purpleTheme-primary
           ${value ? "border-purpleTheme-primary" : "border-purpleTheme-border"}
           focus:ring-2 focus:ring-purpleTheme-primary`}
       />

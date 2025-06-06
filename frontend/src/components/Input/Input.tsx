@@ -34,7 +34,8 @@ export default function Input({
         onChange={onChange}
         placeholder={placeholder}
         className={`px-4 py-2 rounded-lg border text-sm outline-none transition-all
-          bg-white/10 text-white placeholder-white/70
+          bg-white/10 text-purpleTheme-primary placeholder-white/70
+          ${value ? "border-purpleTheme-primary" : "border-purpleTheme-border"}
           ${error ? 'border-purpleTheme-error' : 'border-white/30'}
           focus:ring-2 focus:ring-white/50`
         }

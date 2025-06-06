@@ -29,10 +29,22 @@ export default function ColoniaCard({
       className="bg-fuchsia-300/80 p-6 rounded-2xl shadow-md cursor-pointer hover:shadow-lg transition"
     >
       <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
-        <span>📍</span>
+        <span>
+          <img
+            src="/assets/Colonias/pawhouse.svg"
+            alt="Colonia"
+            className="w-5 h-5"
+          />
+        </span>
         {colonia.colonia}
       </h2>
-      <p className="text-purple-100 mb-4">Zona: {colonia.zona}</p>
+      <p className="text-purple-100 font-semibold mb-4 flex items-center gap-2">
+        <img
+          src="/assets/icons/map-Zona.svg" alt="Zona" className="w-4 h-4"
+        />
+        <span>Zona:</span>
+        <span className="text-purple-500 font-semibold">  {colonia.zona}</span>
+      </p>
 
       {/* Días de la semana */}
       <div className="flex justify-between font-semibold text-sm mb-1">

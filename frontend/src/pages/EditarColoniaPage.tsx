@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Input from "../components/Input/Input";
 import Button from "../components/Button/Button";
 import FormContainer from "../components/FormContainer";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { validateColoniaData } from "../utils/validators";
 import {
   createZone,
@@ -14,6 +14,7 @@ import SelectInputBox from "../components/SelectInput/SelectInputBox";
 
 export default function EditarColoniaPage() {
   const { id } = useParams(); // en el futuro para obtener desde /colonias/:id
+  const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
@@ -106,9 +107,14 @@ export default function EditarColoniaPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 to-fuchsia-400 flex items-center justify-center px-4">
-      <FormContainer maxWidth="max-w-5xl">
+      <FormContainer maxWidth="max-w-xl border border-purple-800 ">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white font-poppins">
+          <h1 className="text-2xl font-bold text-white font-poppins flex justify-center items-center gap-3">
+            <img
+              src="/assets/icons/datos.svg"
+              alt="Datos"
+              className="w-8 h-8"
+            />
             Editar Colonia
           </h1>
           <p className="text-white/90 mt-1 font-nunito">
@@ -150,6 +156,12 @@ export default function EditarColoniaPage() {
             label="Guardar cambios"
             variant="tertiary"
             onClick={handleSubmit}
+            disabled={!isValid}
+          />
+          <Button
+            label="Cancelar"
+            variant="primary"
+            onClick={() => navigate(`/colonias/${id}`)}
             disabled={!isValid}
           />
         </div>
