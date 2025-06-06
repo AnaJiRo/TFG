@@ -36,6 +36,10 @@ export async function updateColonia(
   return response.data;
 }
 
+export async function deleteColonia(id: string): Promise<void> {
+  await axios.delete(`/colonies/colonies/${id}/`);
+}
+
 export async function getColonies() {
   const response = await axios.get("/colonies/colonies/assignments/summary/");
   return response.data;
