@@ -179,11 +179,19 @@ class AssignmentSummaryView(generics.GenericAPIView):
                     if hasattr(user, "name")
                     else user.get_full_name() or user.username
                 )
+            seen_colonies = set()
             for assignment in assignments:
                 colony = assignment.colony
-                result.append(
-                    {"colonia": colony.name, "asignaciones": colonies[colony.name]}
-                )
+                if colony.id not in seen_colonies:
+                    result.append(
+                        {
+                            "id": colony.id,
+                            "colonia": colony.name,
+                            "asignaciones": colonies[colony.name],
+                            "zona": colony.zone.name if colony.zone else None,
+                        }
+                    )
+                    seen_colonies.add(colony.id)
             return Response(result)
 
 
