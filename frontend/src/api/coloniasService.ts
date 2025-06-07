@@ -103,8 +103,13 @@ export async function getAllZones(params?: {
 export async function getZoneByUserId(
   userId: number | string
 ): Promise<Zone | null> {
-  const response = await axios.get(`/colonies/zones/user/${userId}/`);
-  return response.data;
+  try {
+    const response = await axios.get(`/colonies/zones/user/${userId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching zone by user ID:", error);
+    return null; // Return null if the zone is not found or an error occurs
+  }
 }
 
 // createZone

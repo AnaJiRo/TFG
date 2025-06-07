@@ -74,9 +74,11 @@ export default function UserProfilePage() {
     try {
       const response = await getUserById(userId);
       setUser(response);
+      console.log("Usuario obtenido:", response);
       const zone = await getZoneByUserId(userId);
       setZones(zone);
       setSelectedZone(zone?.name || "");
+      console.log("Zona obtenida:", zone);
       const allZonesResponse = await getAllZones({
         locality: zone?.locality || "",
       });
@@ -114,8 +116,6 @@ export default function UserProfilePage() {
       const englishDays = availableDays.map(
         (day) => daysMap[day] || day.toLowerCase()
       );
-      console.log("Días disponibles en inglés:", englishDays);
-      // TODO: El backend debe recibir el id, y el usuario del id.
 
       const availabilityData: AvailabilityBulk = {
         user_id: userId,
@@ -123,6 +123,8 @@ export default function UserProfilePage() {
         days: englishDays,
       };
       await createBulkAvailability(availabilityData);
+      getUserDataAndZone();
+
       alert("Disponibilidad guardada correctamente.");
     } catch (error) {
       console.error("Error al guardar la disponibilidad:", error);
@@ -226,7 +228,9 @@ export default function UserProfilePage() {
               />
             </div>
             <div>
-              <p className="mb-1 font-semibold  text-white">Días disponibles:</p>
+              <p className="mb-1 font-semibold  text-white">
+                Días disponibles:
+              </p>
               <CheckboxGroup
                 options={daysOfWeek}
                 selected={availableDays}
