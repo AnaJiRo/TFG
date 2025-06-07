@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { useParams, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
 import Select from "../components/SelectBox/Select";
@@ -13,6 +14,7 @@ import {
 } from "../api/coloniasService";
 
 export default function DetalleColoniaPage() {
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -102,6 +104,18 @@ export default function DetalleColoniaPage() {
   };
 
   useEffect(() => {
+    // Obtener rol del usuario desde el token
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode<{ role: string }>(token);
+        setUserRole(decodedToken.role);
+      } catch {
+        setUserRole(null);
+      }
+    } else {
+      setUserRole(null);
+    }
     fetchColonyDetails();
   }, []);
 
@@ -136,7 +150,9 @@ export default function DetalleColoniaPage() {
               <div>
                 <span className="font-semibold mb-4">Nombre:</span>
                 <p>
-                  <span className="font-semibold text-purple-500">{colonia.colonia}</span>
+                  <span className="font-semibold text-purple-500">
+                    {colonia.colonia}
+                  </span>
                 </p>
               </div>
             </div>
@@ -149,8 +165,10 @@ export default function DetalleColoniaPage() {
               />
               <div>
                 <span className="font-semibold mb-4">Ubicación:</span>
-                <p> 
-                  <span className="font-semibold text-purple-500">{colonia.ubicacion}</span>
+                <p>
+                  <span className="font-semibold text-purple-500">
+                    {colonia.ubicacion}
+                  </span>
                 </p>
               </div>
             </div>
@@ -163,19 +181,23 @@ export default function DetalleColoniaPage() {
               />
               <div>
                 <span className="font-semibold mb-4">Zona:</span>
-                  <p>
-                    <span className="font-semibold text-purple-500">{colonia.zona}</span>
-                  </p>
+                <p>
+                  <span className="font-semibold text-purple-500">
+                    {colonia.zona}
+                  </span>
+                </p>
               </div>
             </div>
 
-            <div className="pt-4 flex justify-center">
-              <Button
-                label="Editar"
-                variant="tertiary"
-                onClick={() => navigate(`/colonias/${colonia.id}/editar`)}
-              />
-            </div>
+            {userRole === "admin" && (
+              <div className="pt-4 flex justify-center">
+                <Button
+                  label="Editar"
+                  variant="tertiary"
+                  onClick={() => navigate(`/colonias/${colonia.id}/editar`)}
+                />
+              </div>
+            )}
           </div>
 
           {/* Sección derecha - voluntarios por día */}
@@ -219,10 +241,14 @@ export default function DetalleColoniaPage() {
                     <Select
                       value={asignado}
                       options={options}
-                      onChange={(nuevoValor) =>
-                        handleAsignacion(dia, parseInt(nuevoValor))
+                      onChange={
+                        userRole === "admin"
+                          ? (nuevoValor) =>
+                              handleAsignacion(dia, parseInt(nuevoValor))
+                          : () => {}
                       }
                       placeholder="Sin asignar"
+                      disabled={userRole !== "admin"}
                     />
                   ) : (
                     <span className="text-white/70 text-sm">
@@ -233,13 +259,15 @@ export default function DetalleColoniaPage() {
               );
             })}
 
-            <div className="pt-4 flex justify-center">
-              <Button
-                label="Guardar asignación"
-                variant="tertiary"
-                onClick={guardarAsignaciones}
-              />
-            </div>
+            {userRole === "admin" && (
+              <div className="pt-4 flex justify-center">
+                <Button
+                  label="Guardar asignación"
+                  variant="tertiary"
+                  onClick={guardarAsignaciones}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -247,7 +275,7 @@ export default function DetalleColoniaPage() {
         <img
           src="/assets/login/pawprint-cat.svg"
           alt="Huella gato - Volver atrás"
-          onClick={() => navigate('/colonias')}
+          onClick={() => navigate("/colonias")}
           className="absolute top-6 right-8 w-20 opacity-90 cursor-pointer transition-transform hover:scale-110"
           title="Volver atrás"
         />
