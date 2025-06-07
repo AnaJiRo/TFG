@@ -117,6 +117,15 @@ export default function UserProfilePage() {
         (day) => daysMap[day] || day.toLowerCase()
       );
 
+      // delete days zone previously saved
+      const availabilityToDelete: AvailabilityBulk = {
+        user_id: userId,
+        zone_id: zones?.id || selectedZoneId,
+        days: [],
+      };
+
+      await createBulkAvailability(availabilityToDelete);
+
       const availabilityData: AvailabilityBulk = {
         user_id: userId,
         zone_id: selectedZoneId,
