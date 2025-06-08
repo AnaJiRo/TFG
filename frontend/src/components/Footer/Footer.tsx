@@ -5,7 +5,7 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
         {/* Texto izquierda */}
         <p>
-          © {new Date().getFullYear()} Gestor de Colonias. Todos los derechos reservados.
+          © {new Date().getFullYear()} PlaniCat. Todos los derechos reservados.
         </p>
 
         {/* Créditos / Enlaces opcionales */}
@@ -17,7 +17,7 @@ export default function Footer() {
             <img src="/assets/github.svg" alt="GitHub" className="w-5 h-5" />
             <span>GitHub</span>
           </a>
-          <a href="#" className="hover:underline">Contacto</a>
+          
         </div>
       </div>
     </footer>
