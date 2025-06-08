@@ -1,11 +1,15 @@
-# 📚 TFG - 🐱 Gestor de Colonias Felinas 🐱
+<p align="center">
+  <img src="./docs/logo-planicat.png" alt="PlaniCat Logo" width="200"/>
+</p>
+
+# 📚 TFG - 🐱 PlaniCat - Gestor de Colonias Felinas 🐱
 
 Aplicación web para la gestión eficiente de colonias felinas por asociaciones locales. Permite a los administradores asignar voluntarios, gestionar colonias y mejorar la atención a los animales.
 ---
 
 ## 🚀 Tecnologías utilizadas
 
-- ⚛️ React + Vite + TypeScript
+- ⚛️ React + Vite + TypeScript + Tailwind
 - 🐍 Django 5 + Django REST Framework
 - 🐘 PostgreSQL
 - 🐳 Docker + Docker Compose
@@ -82,18 +86,6 @@ useEffect(() => {
 
 ---
 
-## 📝 Todo lo que se ha hecho hasta ahora
-
-- [x] Crear proyecto con Docker Compose
-- [x] Backend Django + conexión PostgreSQL
-- [x] Frontend Vite + React + TypeScript
-- [x] Comunicación entre frontend y backend
-- [x] CORS funcionando correctamente
-- [x] Endpoint `/ping/` de prueba operativo
-- [x] Diseñar modelo entidad-relación (ERD)
-
----
-
 ## 📌 Notas
 
 > Si no puedes acceder al frontend desde Docker, asegúrate de que `--host` está definido en el `Dockerfile`:
@@ -101,15 +93,6 @@ useEffect(() => {
 > ```Dockerfile
 > CMD ["npm", "run", "dev", "--", "--host"]
 > ```
-
----
-
-## 🐾 Próximos pasos
-
-- [ ] Modelos y endpoints REST
-- [ ] Autenticación con JWT
-- [ ] UI para registrar colonias y gatos
-- [ ] Panel de administración
 
 ---
 
