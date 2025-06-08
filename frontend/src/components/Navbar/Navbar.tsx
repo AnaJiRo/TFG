@@ -14,16 +14,17 @@ export default function Navbar() {
 
       {/* Menú de navegación */}
       <div className="flex gap-6 text-md font-nunito">
-
-        <Link to="/admin/users" className="hover:underline">
-          Gestión Usuarios
-        </Link>
+       
         {/* Solo visible para admin */}
         {role === 'admin' && (
-          <Link to="/colonias" className="hover:underline">
-            Colonias
-          </Link>
-         )}
+           <Link to="/admin/users" className="hover:underline">
+           Gestión Usuarios
+         </Link>
+        )}
+
+        <Link to="/colonias" className="hover:underline">
+           Colonias
+        </Link>
         <Link to="/profile" className="hover:underline">
           Perfil
         </Link>
