@@ -76,13 +76,7 @@ export default function RegisterPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <Input
-            label="Apellidos"
-            type="text"
-            placeholder="Tus apellidos"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-          />
+          
           {/* Teléfono */}
           <Input
             label="Teléfono"

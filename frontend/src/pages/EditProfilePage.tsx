@@ -67,7 +67,7 @@ export default function EditProfilePage() {
           onSubmit={handleSubmit}
           className="bg-fuchsia-300/80 p-6 border border-purple-500 rounded-xl w-full max-w-md space-y-4"
         >
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
+          <div className="gap-x-12 gap-y-6">
             <Input
               label="Nombre usuario"
               name="username"
