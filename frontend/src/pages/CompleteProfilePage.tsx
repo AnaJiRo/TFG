@@ -116,11 +116,8 @@ export default function CompleteProfilePage() {
           </p>
         </div>
 
-        {/*Esto podia cambiar, no es fijo*/}
-
-        {/*Esto podia cambiar, no es fijo*/}
         {/* Localidad */}
-        <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
+        <h2 className="text-white font-semibold mb-2">Localidad</h2>
         <SelectBox
           label=""
           value={locality}
@@ -143,7 +140,6 @@ export default function CompleteProfilePage() {
           />
         </div>
 
-        {/*Esto cabiara, no sera radiogroup, ya que la zona sera editable por el admin y filtrara por localidad*/}
         {/* Zona preferida */}
         <div>
           <h2 className="text-white font-semibold mb-2">Zona preferida</h2>
@@ -153,7 +149,6 @@ export default function CompleteProfilePage() {
             onChange={setSelectedZone}
             options={filteredZones.map((zone) => zone.name)}
           />
-          {/* TODO: reemplazar dummyZones por llamada a API de zonas según localidad */}
         </div>
 
         {/* Botón y errores */}

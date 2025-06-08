@@ -87,7 +87,9 @@ export default function DashboardColoniasPage() {
             {userRole === "admin" && (
               <button
                 onClick={() => handleDeleteColonia(colonia.id)}
-                className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white z-10 shadow group-hover:scale-110 transition-transform"
+                className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center 
+                  rounded-full bg-red-500 hover:bg-red-600 text-white z-10 shadow 
+                  group-hover:scale-110 transition-transform"
                 title="Eliminar colonia"
               >
                 <img
