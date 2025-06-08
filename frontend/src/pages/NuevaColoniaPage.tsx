@@ -151,7 +151,7 @@ export default function NuevaColoniaPage() {
         {/* Layout en dos columnas */}
         <div className="flex flex-col md:flex-row gap-8 w-full">
           {/* Columna izquierda: info general */}
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4 border border-purple-500 rounded-xl p-6">
             <Input
               label="Nombre de la colonia"
               name=""
@@ -186,7 +186,7 @@ export default function NuevaColoniaPage() {
           </div>
 
           {/* Columna derecha: asignación por día */}
-          <div className="flex-1 space-y-3">
+          <div className="flex-1 space-y-3 border border-purple-500 rounded-xl p-6">
             <h2 className="text-white font-semibold mb-2">
               Asignar voluntarios por día
             </h2>
@@ -243,6 +243,13 @@ export default function NuevaColoniaPage() {
         </div>
 
         {/* Gato decorativo */}
+        <img
+          src="/assets/login/pawprint-cat.svg"
+          alt="Huella gato - Volver atrás"
+          onClick={() => navigate("/colonias")}
+          className="absolute top-8 right-8 w-20 opacity-90 cursor-pointer transition-transform hover:scale-110"
+          title="Volver atrás"
+        />
         <img
           src="/assets/login/sit-cat-.svg"
           alt="Gato decorativo"
